@@ -38,10 +38,13 @@ body {
 .stat-block {
   background-color: <%= Config.color_stat_block_background() %>;
   border: 2px solid <%= Config.color_stat_block_background() %>;
+  border-right: 2px solid rgba(0,0,0,.4);
 }
 
 #health .container {
   color: <%= Config.color_health_bar_background() %>;
+  border-bottom: 4px solid rgba(0,0,0,.4);
+  border-right: 2px solid rgba(0,0,0,.4);
 }
 #health .percentage {
   background: <%= Config.color_health_bar() %>;
@@ -49,6 +52,8 @@ body {
 
 #skills .container {
   color: <%= Config.color_skill_bar_background() %>;
+  border-bottom: 4px solid rgba(0,0,0,.4);
+  border-right: 2px solid rgba(0,0,0,.4);
 }
 #skills .percentage {
   background: <%= Config.color_skill_bar() %>;
@@ -56,6 +61,8 @@ body {
 
 #endurance .container {
   color: <%= Config.color_endurance_bar_background() %>;
+  border-bottom: 4px solid rgba(0,0,0,.4);
+  border-right: 2px solid rgba(0,0,0,.4);
 }
 #endurance .percentage {
   background: <%= Config.color_endurance_bar() %>;
@@ -243,4 +250,45 @@ a:hover {
 .console {
   background-color: <%= Config.color_background() %>;
   color: <%= Config.color_text_color() %>;
+}
+
+
+/* width */
+body::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+body::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.6);
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.8);
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,.4);
+}
+
+/* width */
+.panel::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+.panel::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.6);
+}
+
+/* Handle */
+.panel::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.8);
+}
+
+/* Handle on hover */
+.panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,.4);
 }

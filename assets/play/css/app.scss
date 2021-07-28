@@ -7,7 +7,7 @@ $mobile-prompt-height: 220px;
 
 body {
   margin: 0;
-  font-family: "Lucida Console", Monaco, monospace;
+  font-family: "Open Sans", Monaco, monospace;
 }
 
 .panel {
@@ -69,7 +69,7 @@ body {
     margin-left: 3px;
     margin-right: 3px;
     width: calc(100% - 6px);
-    font-family: "Lucida Console", Monaco, monospace;
+    font-family: "Open Sans", Monaco, monospace;
 
     &:focus {
       outline: 3px solid #268bd2;
@@ -239,7 +239,7 @@ pre {
   }
 
   code {
-    font-family: "Lucida Console", Monaco, monospace;
+    font-family: "Open Sans", Monaco, monospace;
   }
 }
 
@@ -393,7 +393,9 @@ input {
 
   span {
     padding-left: 10px;
+    text-transform: uppercase;
   }
+  
 
   @media only screen and (max-width: 500px) {
     & {
