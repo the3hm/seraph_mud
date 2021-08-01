@@ -38,3 +38,14 @@ For creating new commands, here are examples of where other commands are distrib
 
 ### Game Logic
 
+### Web Architecture
+
+#### Play View
+
+#### Admin View
+
+#### Base Page View
+
+#### Character Creation View
+/lib/web/templates/character
+

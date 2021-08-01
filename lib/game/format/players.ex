@@ -36,15 +36,7 @@ defmodule Game.Format.Players do
 
   def prompt(%{experience_points: exp, stats: stats, config: config}) do
     exp = rem(exp, 1000)
-
-    "\\[#{config.prompt}\\] > "
-    |> String.replace("%h", to_string(stats.health_points))
-    |> String.replace("%H", to_string(stats.max_health_points))
-    |> String.replace("%s", to_string(stats.skill_points))
-    |> String.replace("%S", to_string(stats.max_skill_points))
-    |> String.replace("%e", to_string(stats.endurance_points))
-    |> String.replace("%E", to_string(stats.max_endurance_points))
-    |> String.replace("%x", to_string(exp))
+    "> "
   end
 
   def prompt(_save), do: "> "
