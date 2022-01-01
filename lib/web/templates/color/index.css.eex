@@ -12,12 +12,6 @@ body {
   background-color: <%= Config.color_background() %>;
 }
 
-.panel {
-  border-left: 2px solid <%= Config.color_panel_border() %>;
-  border-right: 2px solid <%= Config.color_panel_border() %>;
-  border-bottom: 2px solid <%= Config.color_panel_border() %>;
-}
-
 .character-info {
   background-color: <%= Config.color_character_info_background() %>;
   border-bottom: 2px solid <%= Config.color_character_info_background() %>;
@@ -89,8 +83,8 @@ body {
 .target-bar .button,
 .action-bar .button {
   color: white;
-  border: 2px solid #fdf6e3;
-  background-color: #fdf6e3;
+  border: 2px solid #171b24;
+  background-color: #171b24;
 }
 
 .action-bar .container {
@@ -106,7 +100,7 @@ body {
 }
 
 .action-bar .container.empty {
-  background-color: #fdf6e3;
+  background-color: #161d20;
 }
 
 .target-bar .button {
