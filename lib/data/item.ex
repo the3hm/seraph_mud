@@ -15,12 +15,20 @@ defmodule Data.Item do
 
   @type instance :: %Instance{}
 
-  @types ["basic", "weapon", "armor"]
+  @types ["basic", "weapon", "armor","resource", "potion", "book", "bauble"]
 
+  @doc """
+  Item Schema
+  """
   @valid_effects %{
     "basic" => ["recover"],
     "weapon" => ["damage", "damage/type", "stats"],
-    "armor" => ["stats", "damage/type"]
+    "armor" => ["stats", "damage/type"],
+    "resource" => ["stats"],
+    "book" => ["stats"],
+    "bauble" => ["stats","stats/boost"],
+    "potion" => ["stats", "stats/boost"]
+
   }
 
   @required_fields [
@@ -96,6 +104,10 @@ defmodule Data.Item do
 
   def basic_stats(:basic), do: %{}
   def basic_stats(:weapon), do: %{}
+  def basic_stats(:resource), do: %{}
+  def basic_stats(:potion), do: %{}
+  def basic_stats(:bauble), do: %{}
+  def basic_stats(:book), do: %{}
 
   @doc """
   Create an instance of an item
