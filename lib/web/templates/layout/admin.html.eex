@@ -264,7 +264,6 @@
       </div>
 
       <footer class="main-footer">
-        Built with <%= link(ExVenture.version(), to: "https://exventure.org", target: "_blank") %>.
       </footer>
     </div>
   </body>
