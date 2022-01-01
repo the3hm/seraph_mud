@@ -25,7 +25,16 @@ defmodule Data.Room do
     "mountain",
     "field",
     "meadow",
-    "dungeon"
+    "dungeon",
+    "desert",
+    "glacier",
+    "tundra",
+    "ice",
+    "cave",
+    "plateau",
+    "plain",
+    "pond",
+    "swamp"
   ]
 
   schema "rooms" do
