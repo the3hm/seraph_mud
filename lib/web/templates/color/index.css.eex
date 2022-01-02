@@ -4,23 +4,17 @@
  */
 
 body {
-  background-color: <%= Config.color_background() %>;
+  background-color: #161624;
   color: <%= Config.color_text_color() %>;
 }
 
-.channels-container {
-  background-color: <%= Config.color_background() %>;
-}
-
 .character-info {
-  background-color: <%= Config.color_character_info_background() %>;
-  border-bottom: 2px solid <%= Config.color_character_info_background() %>;
+  background-color: rgba(0,0,0,.4);
   color: <%= Config.color_character_info_text() %>;
 }
 
 .room-info {
-  background-color: <%= Config.color_room_info_background() %>;
-  border-bottom: 2px solid <%= Config.color_room_info_background() %>;
+  background-color: rgba(0,0,0,.4);
   color: <%= Config.color_room_info_text() %>;
 }
 
@@ -30,9 +24,13 @@ body {
 
 .experience-bar,
 .stat-block {
-  background-color: <%= Config.color_stat_block_background() %>;
-  border: 2px solid <%= Config.color_stat_block_background() %>;
+  background-color: #000;
+  border: 0px;
   border-right: 2px solid rgba(0,0,0,.4);
+}
+
+.panel {
+  border-left: 6px solid rgba(0,0,0,.1);
 }
 
 #health .container {
@@ -67,8 +65,8 @@ body {
 }
 
 .prompt input[type='text'] {
-  background-color: <%= Config.color_prompt_background() %>;
-  color: <%= Config.color_prompt_color() %>;
+  background-color: #000;
+  color: #FFF;
 }
 
 .tooltip {
