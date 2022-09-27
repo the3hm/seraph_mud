@@ -29,13 +29,16 @@ defmodule Game.Effect do
 
     damage_over_time = damage_over_time_effects |> Enum.map(&calculate_damage(&1, stats))
 
+    {recover_over_time_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover/over-time"))
+    recover_over_time = recover_over_time_effects |> Enum.map(&calculate_recover(&1, stats))
+
     {recover_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover"))
     recover = recover_effects |> Enum.map(&calculate_recover(&1, stats))
 
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
 
-    stats_boost ++ damage ++ damage_over_time ++ recover
+    stats_boost ++ damage ++ damage_over_time ++ recover_over_time ++ recover
   end
 
   @doc """
@@ -217,6 +220,24 @@ defmodule Game.Effect do
     Map.put(stats, :health_points, health_points - effect.amount)
   end
 
+  def apply_effect(effect = %{kind: "recover/over-time", type: "health"}, stats) do
+    %{health_points: health_points, max_health_points: max_health_points} = stats
+    health_points = max_recover(health_points, effect.amount, max_health_points)
+    %{stats | health_points: health_points}
+  end
+
+  def apply_effect(effect = %{kind: "recover/over-time", type: "skill"}, stats) do
+    %{skill_points: skill_points, max_skill_points: max_skill_points} = stats
+    skill_points = max_recover(skill_points, effect.amount, max_skill_points)
+    %{stats | skill_points: skill_points}
+  end
+
+  def apply_effect(effect = %{kind: "recover/over-time", type: "endurance"}, stats) do
+    %{endurance_points: endurance_points, max_endurance_points: max_endurance_points} = stats
+    endurance_points = max_recover(endurance_points, effect.amount, max_endurance_points)
+    %{stats | endurance_points: endurance_points}
+  end
+
   def apply_effect(effect = %{kind: "recover", type: "health"}, stats) do
     %{health_points: health_points, max_health_points: max_health_points} = stats
     health_points = max_recover(health_points, effect.amount, max_health_points)
@@ -258,6 +279,7 @@ defmodule Game.Effect do
   Filters to continuous effects only
 
   - `damage/over-time`
+  - `recover/over-time`
   """
   @spec continuous_effects([Effect.t()], Character.t()) :: [Effect.t()]
   def continuous_effects(effects, from) do

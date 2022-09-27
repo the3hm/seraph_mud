@@ -69,6 +69,15 @@ defmodule Web.Skill do
   def edit(skill), do: skill |> Skill.changeset(%{})
 
   @doc """
+  Clone an skill (remove the id)
+  """
+  @spec clone(skill :: Skill.t()) :: changeset :: map
+  def clone(skill) do
+    skill = skill |> Map.take(Skill.fields())
+    struct(Skill, skill)
+  end
+
+  @doc """
   Create a skill
   """
   @spec create(map) :: {:ok, Skill.t()} | {:error, changeset :: map}

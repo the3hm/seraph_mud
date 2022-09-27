@@ -346,6 +346,10 @@ defmodule Game.Experience do
     end
   end
 
+  defp _track_stat_usage(%{kind: "recover/over-time"}, save) do
+    increment_level_stat(save, :awareness)
+  end
+
   defp _track_stat_usage(%{kind: "recover"}, save) do
     increment_level_stat(save, :awareness)
   end

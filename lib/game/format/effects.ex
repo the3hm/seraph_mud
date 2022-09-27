@@ -35,6 +35,13 @@ defmodule Game.Format.Effects do
     |> Format.template("[amount] [type] damage is dealt to [target].")
   end
 
+  def render(effect = %{kind: "recover/over-time", type: "health"}, target) do
+    context()
+    |> assign(:amount, effect.amount)
+    |> assign(:target, Format.name(target))
+    |> Format.template("[amount] [type] damage is healed to [target].")
+  end
+
   def render(effect = %{kind: "recover", type: "health"}, target) do
     context()
     |> assign(:amount, effect.amount)

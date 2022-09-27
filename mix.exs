@@ -59,6 +59,7 @@ defmodule ExVenture.Mixfile do
       {:elixir_uuid, "~> 1.2"},
       {:eqrcode, "~> 0.1.5"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:font_awesomex, "~> 4.0.0"},
       {:gettext, "~> 0.17.0"},
       {:gossip, "~> 1.0"},
       {:libcluster, "~> 3.0", only: [:dev, :prod]},
@@ -67,6 +68,7 @@ defmodule ExVenture.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 2.10"},
+      {:phoenix_inline_svg, "~> 1.4"},
       {:plug_cowboy, "~> 2.0", override: true},
       {:pid_file, "~> 0.1.0"},
       {:prometheus_ex, git: "https://github.com/deadtrickster/prometheus.ex.git", override: true},
@@ -79,9 +81,9 @@ defmodule ExVenture.Mixfile do
       {:sentry, "~> 7.0"},
       {:squabble, git: "https://github.com/oestrich/squabble.git"},
       {:telemetry, "~> 0.3"},
-      {:timex, "~> 3.1"},
-      {:ueberauth, "~> 0.4"},
-      {:yaml_elixir, "~> 2.0"}
+      {:timex, "~> 3.7.6"},
+      {:ueberauth, "~> 0.7.0"},
+      {:yaml_elixir, "~> 2.8.0"}
     ]
   end
 

@@ -227,6 +227,69 @@ class DamageOverTimeEffect extends BaseEffect {
   }
 }
 
+class RecoverOverTimeEffect extends BaseEffect {
+  constructor(props) {
+    super(props);
+
+    let effect = props.effect;
+
+    this.state = {
+      kind: "recover/over-time",
+      type: effect.type,
+      amount: effect.amount,
+      every: effect.amount,
+      count: effect.amount,
+    };
+  }
+
+  castField(field, value) {
+    switch (field) {
+      case "amount":
+      case "every":
+      case "count":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
+  }
+
+  render() {
+    let type = this.state.type;
+    let amount = this.state.amount;
+    let every = this.state.every;
+    let count = this.state.count;
+
+    return (
+      <div className="form-group row">
+        <label className="col-md-4">Kind: recover/over-time</label>
+        <div className="col-md-8">
+          <div className="row">
+            <div className="col-md-4">
+              <label>Recover Type</label>
+              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
+            </div>
+            <div className="col-md-4">
+              <label>Amount</label>
+              <input type="text" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-4">
+              <label>Every X ms</label>
+              <input type="text" value={every} className="form-control" onChange={this.handleUpdateField("every")} />
+            </div>
+            <div className="col-md-4">
+              <label>Count</label>
+              <input type="text" value={count} className="form-control" onChange={this.handleUpdateField("count")} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 class RecoverEffect extends BaseEffect {
   constructor(props) {
     super(props);
@@ -436,6 +499,11 @@ class Effect extends React.Component {
           <DamageOverTimeEffect effect={effect} handleUpdate={handleUpdate} />
         );
 
+      case "recover/over-time":
+        return (
+            <RecoverOverTimeEffect effect={effect} handleUpdate={handleUpdate} />
+        );  
+
       case "recover":
         return (
           <RecoverEffect effect={effect} handleUpdate={handleUpdate} />
@@ -466,6 +534,7 @@ class AddEffect extends React.Component {
     this.addDamage = this.addDamage.bind(this);
     this.addDamageType = this.addDamageType.bind(this);
     this.addDamageOverTime = this.addDamageOverTime.bind(this);
+    this.addRecoverOverTime = this.addRecoverOverTime.bind(this);
     this.addRecover = this.addRecover.bind(this);
     this.addStats = this.addStats.bind(this);
     this.addStatsBoost = this.addStatsBoost.bind(this);
@@ -496,6 +565,18 @@ class AddEffect extends React.Component {
     this.props.addEffect({
       kind: "damage/over-time",
       type: "slashing",
+      amount: 10,
+      every: 1000,
+      count: 3,
+    });
+  }
+
+  addRecoverOverTime(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "recover/over-time",
+      type: "health",
       amount: 10,
       every: 1000,
       count: 3,
@@ -543,6 +624,7 @@ class AddEffect extends React.Component {
           <a href="#" className="btn btn-default" onClick={this.addDamageOverTime}>Add 'damage/over-time'</a>
         </div>
         <div>
+          <a href="#" className="btn btn-default" onClick={this.addRecoverOverTime}>Add 'recover/over-time'</a>
           <a href="#" className="btn btn-default" onClick={this.addRecover}>Add 'recover'</a>
           <a href="#" className="btn btn-default" onClick={this.addStats}>Add 'stats'</a>
           <a href="#" className="btn btn-default" onClick={this.addStatsBoost}>Add 'stats/boost'</a>

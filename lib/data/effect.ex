@@ -7,6 +7,7 @@ defmodule Data.Effect do
   - "damage": Does an amount of damage
   - "damage/type": Halves damage if the type does not align
   - "damage/over-time": Does damage over time
+  - "recover/over-time": heals an amount over time
   - "recover": Heals an amount of health/skill/move points
   - "stats": Modify base stats for the player
   """
@@ -35,6 +36,13 @@ defmodule Data.Effect do
   """
   @type damage_over_time :: %{
           type: String.t(),
+          amount: integer(),
+          every: integer(),
+          count: integer()
+        }
+
+  @type recover_over_time :: %{
+          type: atom(),
           amount: integer(),
           every: integer(),
           count: integer()
@@ -72,6 +80,7 @@ defmodule Data.Effect do
       "damage",
       "damage/over-time",
       "damage/type",
+      "recover/over-time",
       "recover",
       "stats",
       "stats/boost"
@@ -152,6 +161,10 @@ defmodule Data.Effect do
     %{kind: "damage/over-time", type: "slashing", amount: 0, every: 10, count: 2}
   end
 
+  def starting_effect("recover/over-time") do
+    %{kind: "recover/over-time", type: "health", amount: 0, every: 10, count: 2}
+  end
+
   def starting_effect("recover") do
     %{kind: "recover", type: "health", amount: 0}
   end
@@ -203,6 +216,10 @@ defmodule Data.Effect do
 
   def valid?(effect = %{kind: "damage/over-time"}) do
     keys(effect) == [:amount, :count, :every, :kind, :type] && valid_damage_over_time?(effect)
+  end
+
+  def valid?(effect = %{kind: "recover/over-time"}) do
+    keys(effect) == [:amount, :count, :every, :kind, :type] && valid_recover_over_time?(effect)
   end
 
   def valid?(effect = %{kind: "recover"}) do
@@ -282,6 +299,16 @@ defmodule Data.Effect do
   end
 
   def valid_damage_over_time?(_), do: false
+
+  @spec valid_recover_over_time?(Effect.t()) :: boolean
+  def valid_recover_over_time?(effect)
+
+  def valid_recover_over_time?(%{type: type, amount: amount, every: every, count: count}) do
+    is_binary(type) && is_integer(amount) && is_integer(every) && every > 0 && is_integer(count) &&
+      count > 0
+  end
+
+  def valid_recover_over_time?(_), do: false
 
   @doc """
   Validate if recover is right
@@ -395,6 +422,7 @@ defmodule Data.Effect do
   @spec continuous?(Effect.t()) :: boolean()
   def continuous?(effect)
   def continuous?(%{kind: "damage/over-time"}), do: true
+  def continuous?(%{kind: "recover/over-time"}), do: true
   def continuous?(%{kind: "stats/boost"}), do: true
   def continuous?(_), do: false
 
