@@ -15,7 +15,7 @@ defmodule Data.Item do
 
   @type instance :: %Instance{}
 
-  @types ["basic", "weapon", "armor","resource", "potion", "book", "bauble"]
+  @types ["basic", "weapon", "armor","resource", "potion", "book", "bauble", "jewelry"]
 
   @doc """
   Item Schema
@@ -26,8 +26,8 @@ defmodule Data.Item do
     "armor" => ["stats", "damage/type"],
     "resource" => ["stats"],
     "book" => ["stats"],
-    "bauble" => ["stats","stats/boost"],
-    "potion" => ["stats", "stats/boost"]
+    "bauble" => ["stats","stats/boost", "recover/over-time"],
+    "potion" => ["stats", "stats/boost", "recover/over-time", "recover"]
 
   }
 
