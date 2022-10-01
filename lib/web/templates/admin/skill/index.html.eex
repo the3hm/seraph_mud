@@ -49,6 +49,7 @@
                     <td>
                       <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
                       <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Clone", to: skill_path(@conn, :new, clone_id: skill.id), class: "btn btn-default btn-xs") %>
                     </td>
                   </tr>
                 <% end %>
