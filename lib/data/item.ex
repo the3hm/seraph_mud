@@ -108,6 +108,7 @@ defmodule Data.Item do
   def basic_stats(:potion), do: %{}
   def basic_stats(:bauble), do: %{}
   def basic_stats(:book), do: %{}
+  def basic_stats(:jewelry), do: %{}
 
   @doc """
   Create an instance of an item
