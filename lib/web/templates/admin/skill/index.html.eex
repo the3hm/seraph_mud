@@ -69,6 +69,12 @@
         </div>
         <%= form_tag skill_path(@conn, :index), method: :get do %>
           <div class="box-body">
+
+            <div class="form-group">
+              <%= label :skill, :name %>
+              <%= text_input :skill, :name, value: @filter["name"], class: "form-control" %>
+            </div>
+
             <div class="form-group">
               <%= label :skill, :level %>
               <div class="row">

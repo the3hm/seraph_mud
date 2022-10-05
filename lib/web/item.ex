@@ -61,6 +61,11 @@ defmodule Web.Item do
     query |> where([i], i.type == ^type)
   end
 
+  def filter_on_attribute({"name", name}, query) do
+    query
+    |> where([c], ilike(c.name, ^"%#{name}%"))
+  end
+
   def filter_on_attribute({"item_aspect_id", item_aspect_id}, query) do
     query
     |> join(:left, [i], ia in assoc(i, :item_aspectings))

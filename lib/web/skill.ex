@@ -46,6 +46,16 @@ defmodule Web.Skill do
     query |> where([s], s.is_enabled == ^value)
   end
 
+  def filter_on_attribute({"name", name}, query) do
+    query
+    |> where([c], ilike(c.name, ^"%#{name}%"))
+  end
+
+  def filter_on_attribute({"class_id", class_id}, query) do
+    query
+    |> where([c], c.class_id == ^class_id)
+  end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
