@@ -11,12 +11,18 @@
 
       <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
 
-      <%= FormView.textarea_field(f, :body, rows: 10) %>
+      <%= FormView.textarea_field(f, :body, class: "invisible", rows: 10) %>
 
       <%= FormView.checkbox_field(f, :is_published, label: "Is Published?") %>
 
       <%= FormView.checkbox_field(f, :is_sticky, label: "Is Sticky?") %>
     </div>
+
+<script>
+                // Replace the <textarea id="editor1"> with a CKEditor 4
+                // instance, using default configuration.
+                CKEDITOR.replace( 'announcement_body' );
+      </script>
 
     <div class="box-footer">
       <%= submit @submit, class: "btn btn-primary pull-right" %>

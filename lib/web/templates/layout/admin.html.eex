@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/admin.css") %>">
     <link rel="stylesheet" href="<%= color_css_path(@conn) %>">
     <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
+    <script src="https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js"></script>
   </head>
 
   <body class="hold-transition skin-black sidebar-mini" data-user-token="<%= @conn |> user_token() %>">

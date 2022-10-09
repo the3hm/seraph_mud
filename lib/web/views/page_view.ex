@@ -7,6 +7,7 @@ defmodule Web.PageView do
   alias Web.Color
   alias Web.Endpoint
   alias Web.Room
+  alias Web.Stats
   alias Web.TimeView
   alias Web.Router.Helpers, as: RouteHelpers
 

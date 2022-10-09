@@ -58,7 +58,7 @@ defmodule ExVenture.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:elixir_uuid, "~> 1.2"},
       {:eqrcode, "~> 0.1.5"},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:font_awesomex, "~> 4.0.0"},
       {:gettext, "~> 0.17.0"},
       {:gossip, "~> 1.0"},
