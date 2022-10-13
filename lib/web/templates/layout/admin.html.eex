@@ -63,32 +63,47 @@
 
       <aside class="main-sidebar">
         <section class="sidebar">
-          <ul class="sidebar-menu" data-widget="tree">
-            <li class="<%= tab_selected(@conn, "dashboard") %>">
-              <%= link(to: dashboard_path(@conn, :index)) do %>
-                <i class="fa fa-dashboard"></i>
-                <span>Dashboard</span>
-              <% end %>
+          <ul class="sidebar-menu" data-widget="tree" role="menu" data-accordion="true">
+          
+<!--
+TREEVIEW - MENU 1 - DASHBOARD
+-->         
+            
+            <li class="header" style="margin-bottom: 0px; padding-bottom: 0px; padding-top: 0px;">
+            <div class="justify-content-center" style="margin-left:2px;">
+            <table class="table table-borderless" style="border-top: none!important; margin-bottom: 0px; font-size: 16px;">
+              <tr style="border-top: none;">
+                <th scope="col" style="border-top: none;">
+                  <div class="<%= tab_selected(@conn, "dashboard") %>">
+                  <%= link(to: dashboard_path(@conn, :index)) do %>
+                  <i class="fa fa-dashboard fa-quicklink" data-trigger="hover" title="Admin Dashboard"></i>
+                  <% end %>
+                  </div>
+                </th>
+                <th scope="col" style="border-top: none;">
+                  <div>
+                    <%= link(to: public_page_path(@conn, :index), target: "_blank") do %>
+                      <i class="fa fa-home fa-quicklink" data-trigger="hover" title="Home"></i>
+                    <% end %>
+                  </div>
+                </th>
+                <th scope="col" style="border-top: none;">
+                  <div>
+                    <%= link(to: public_play_path(@conn, :show), target: "_blank") do %>
+                      <i class="fa fa-gamepad fa-quicklink" data-trigger="hover" title="Play Game"></i>
+                    <% end %>
+                  </div>
+                </th>
+              </tr>
+            </table>
+            </div>
             </li>
-            <li>
-              <%= link(to: public_page_path(@conn, :index), target: "_blank") do %>
-                <i class="fa fa-home"></i>
-                <span>Home Page &raquo;</span>
-              <% end %>
-            </li>
-            <li>
-              <%= link(to: public_play_path(@conn, :show), target: "_blank") do %>
-                <i class="fa fa-gamepad"></i>
-                <span>Play Now &raquo;</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "notes") %>">
-              <%= link(to: note_path(@conn, :index)) do %>
-                <i class="fa fa-book"></i>
-                <span>Notes</span>
-              <% end %>
-            </li>
-            <li class="header">PLAYERS</li>
+            
+          
+<!--
+TREEVIEW - MENU 2 - PLAYERS
+-->
+          <li class="header">PLAYERS</li>
             <li class="<%= tab_selected(@conn, "characters") %>">
               <%= link(to: character_path(@conn, :index)) do %>
                 <i class="fa fa-users"></i>
@@ -133,6 +148,12 @@
                 <% end %>
               </li>
             <% end %>
+            
+
+<!--
+TREEVIEW - MENU 3 - THE WORLD
+-->
+
             <li class="header">THE WORLD</li>
             <li class="<%= tab_selected(@conn, "features") %>">
               <%= link(to: feature_path(@conn, :index)) do %>
@@ -170,7 +191,18 @@
                 <span>Zones</span>
               <% end %>
             </li>
+
+
+<!--
+TREEVIEW - MENU 3 - THE GAME
+-->
             <li class="header">THE GAME</li>
+            <li class="<%= tab_selected(@conn, "notes") %>">
+              <%= link(to: note_path(@conn, :index)) do %>
+                <i class="fa fa-book"></i>
+                <span>Notes</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "announcements") %>">
               <%= link(to: announcement_path(@conn, :index)) do %>
                 <i class="fa fa-map-pin"></i>
@@ -228,12 +260,6 @@
                 <span>Insights</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "notes") %>">
-              <%= link(to: note_path(@conn, :index)) do %>
-                <i class="fa fa-book"></i>
-                <span>Notes</span>
-              <% end %>
-            </li>
             <li class="<%= tab_selected(@conn, "typos") %>">
               <%= link(to: typo_path(@conn, :index)) do %>
                 <i class="fa fa-font"></i>
@@ -265,6 +291,32 @@
       </div>
 
       <footer class="main-footer">
+      <script type="text/javascript">
+    $(function () {
+        var params = window.location.pathname;
+        params = params.toLowerCase();
+ 
+        if (params != "/") {
+            $(".nav-sidebar li a").each(function (i) {
+                var obj = this;
+                var url = $(this).attr("href");
+                if (url == "" || url == "#") {
+                    return true;
+                }
+                url = url.toLowerCase();
+                if (url.indexOf(params) > -1) {
+                    $(this).parent().addClass("active open menu-open");
+                    $(this).parent().parent().addClass("active open menu-open");
+                    $(this).parent().parent().parent().addClass("active open menu-open");
+                    $(this).parent().parent().parent().parent().addClass("active open menu-open");
+                    $(this).parent().parent().parent().parent().parent().addClass("active open menu-open");
+                    return false;
+                }
+            });
+        }
+    });
+</script>
+
       </footer>
     </div>
   </body>
