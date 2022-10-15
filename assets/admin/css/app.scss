@@ -37,3 +37,52 @@ $bootstrap-sass-asset-helper: "~bootstrap-sass/assets/fonts/bootstrap/";
 
   border: 2px solid black;
 }
+
+.fa-quicklink {
+  font-size: 20px;
+}
+
+.content-wrapper {
+  background-color: #385d6f;
+}
+
+h1 {
+  font-family: inherit;
+  font-weight: 900;
+  line-height: 1.1;
+  color: whitesmoke;
+
+}
+
+.content-header > .breadcrumb > li > a {
+  color: whitesmoke;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.breadcrumb > .active {
+  color: whitesmoke;
+}
+
+.box-header {
+  border-right: 8px solid #3c8dbc;
+}
+
+.box-body {
+  border-right: 8px solid #3c8dbc;
+  border-bottom-right-radius: 0px!important;
+}
+
+.box-footer {
+  border-right: 8px solid #3c8dbc;
+  border-top: 0px;
+  
+}
+
+.sidebar {
+  border-right: 6px solid rgba(0,0,0,.4);
+}
+
+.box {
+  border-top: 3px solid #3c8dbc;
+}
