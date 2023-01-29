@@ -10,6 +10,10 @@
 
       <%= FormView.text_field(f, :name) %>
 
+      <%= FormView.text_field(f, :race) do %>
+      <span class="help-block">This is the creature type of the NPC.</span>
+      <% end %>
+
       <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
 
       <%= FormView.checkbox_field(f, :is_quest_giver, label: "Is a quest giver?") %>

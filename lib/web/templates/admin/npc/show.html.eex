@@ -31,6 +31,10 @@
               <td><%= @npc.name %></td>
             </tr>
             <tr>
+              <th>Race</th>
+              <td><%= @npc.race %></td>
+            </tr>
+            <tr>
               <th>Tags</th>
               <td>
                 <%= Enum.map(@npc.tags, fn (tag) -> %>

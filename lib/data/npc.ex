@@ -13,6 +13,7 @@ defmodule Data.NPC do
   @fields [
     :level,
     :name,
+    :race,
     :tags,
     :status_line,
     :status_listen,
@@ -32,6 +33,7 @@ defmodule Data.NPC do
 
     field(:original_id, :integer, virtual: true)
     field(:name, :string)
+    field(:race, :string)
     field(:level, :integer, default: 1)
     # given after defeat
     field(:experience_points, :integer, default: 0)
@@ -66,6 +68,7 @@ defmodule Data.NPC do
     struct
     |> cast(params, [
       :name,
+      :race,
       :level,
       :experience_points,
       :stats,
@@ -82,6 +85,7 @@ defmodule Data.NPC do
     ])
     |> validate_required([
       :name,
+      :race,
       :level,
       :experience_points,
       :stats,
