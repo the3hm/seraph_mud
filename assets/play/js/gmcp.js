@@ -82,7 +82,7 @@ let characterVitals = (channel, data) => {
   let skill = _.first(Sizzle("#skills .percentage"));
   skill.style.width = `${skillWidth * 100}%`;
   let skillStat = _.first(Sizzle("#skills .stat"));
-  skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points} sp`;
+  skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points} mp`;
 
   let endurance = _.first(Sizzle("#endurance .percentage"));
   endurance.style.width = `${enduranceWidth * 100}%`;

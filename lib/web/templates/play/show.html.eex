@@ -70,21 +70,21 @@
   <div class="action-bar">
   </div>
   <div class="stats">
-    <div class="stat-block tooltip" id="health" data-title="Health Points">
+    <div class="stat-block tooltip" id="health" data-title="Health">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
-    <div class="stat-block tooltip" id="skills" data-title="Skill Points">
+    <div class="stat-block tooltip" id="skills" data-title="Mana">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
-    <div class="stat-block tooltip" id="endurance" data-title="Endurance Points">
+    <div class="stat-block tooltip" id="endurance" data-title="Endurance">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
@@ -96,6 +96,6 @@
     </div>
   </div>
   <div class="prompt-container">
-    <input type="text" id="prompt" autofocus="autofocus" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <input type="text" id="prompt" autofocus="autofocus" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Type commands here..."/>
   </div>
 </div>
