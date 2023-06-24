@@ -95,12 +95,14 @@
             <thead>
               <th>Item</th>
               <th>Created</th>
+              <th>PID</th>
             </thead>
             <tbody>
               <%= Enum.map(@character.save.items, fn (instance) -> %>
                 <tr>
                   <td><%= link(Items.item(instance).name, to: item_path(@conn, :show, instance.id)) %></td>
                   <td><%= time(instance.created_at) %></td>
+                  <td><%= instance.id %></td>
                 </tr>
               <% end) %>
             </tbody>
