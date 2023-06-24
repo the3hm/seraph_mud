@@ -10,6 +10,7 @@ defmodule Data.Effect do
   - "recover/over-time": heals an amount over time
   - "recover": Heals an amount of health/skill/move points
   - "stats": Modify base stats for the player
+  - "room/state": Modify the state of the room of the user
   """
 
   import Data.Type
@@ -84,6 +85,7 @@ defmodule Data.Effect do
       "recover",
       "stats",
       "stats/boost"
+      "room/state"
     ]
   end
 
