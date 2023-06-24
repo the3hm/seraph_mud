@@ -95,7 +95,7 @@
             <thead>
               <th>Item</th>
               <th>Created</th>
-              <th>PID</th>
+              <th>ID</th>
             </thead>
             <tbody>
               <%= Enum.map(@character.save.items, fn (instance) -> %>

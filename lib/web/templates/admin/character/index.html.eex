@@ -67,10 +67,12 @@
         </div>
         <%= form_tag character_path(@conn, :index), method: :get do %>
           <div class="box-body">
+
             <div class="form-group">
-              <%= label :character, :name %>
-              <%= text_input :character, :name, value: @filter["name"], class: "form-control" %>
+              <%= label :character, :user_id %>
+              <%= text_input :character, :user_id, value: @filter["user_id"], class: "form-control" %>
             </div>
+
             <div class="form-group">
               <%= label :character, :level %>
               <div class="row">
