@@ -174,8 +174,8 @@ class DamageOverTimeEffect extends BaseEffect {
       kind: "damage/over-time",
       type: effect.type,
       amount: effect.amount,
-      every: effect.amount,
-      count: effect.amount,
+      every: effect.every,
+      count: effect.count,
     };
   }
 
@@ -237,8 +237,8 @@ class RecoverOverTimeEffect extends BaseEffect {
       kind: "recover/over-time",
       type: effect.type,
       amount: effect.amount,
-      every: effect.amount,
-      count: effect.amount,
+      every: effect.every,
+      count: effect.count,
     };
   }
 

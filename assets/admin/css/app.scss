@@ -86,3 +86,28 @@ h1 {
 .box {
   border-top: 3px solid #3c8dbc;
 }
+
+.label {
+  display: inline;
+  padding: .2em .6em .3em;
+    padding-top: 0.2em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0px;
+  padding-top: 4px;
+  border-bottom: 3px solid rgba(0,0,0,.1);
+  border-right: 2px solid rgba(0,0,0,.1);
+}
+
+.form-control {
+  border-radius: 0;
+  box-shadow: none;
+  border-color: #d2d6de;
+  border: 2px solid rgba(0,0,0,.2);
+  background: aliceblue;
+}

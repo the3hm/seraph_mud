@@ -15,7 +15,7 @@ defmodule Data.Item do
 
   @type instance :: %Instance{}
 
-  @types ["basic", "weapon", "armor","resource", "potion", "book", "bauble", "jewelry"]
+  @types ["basic", "weapon", "armor","resource", "potion", "book", "bauble", "jewelry", "spell", "scroll", "food", "drink"]
 
   @doc """
   Item Schema
@@ -23,12 +23,16 @@ defmodule Data.Item do
   @valid_effects %{
     "basic" => ["recover"],
     "weapon" => ["damage", "damage/type", "stats"],
-    "armor" => ["stats", "damage/type"],
+    "armor" => ["stats", "damage/type", "recover/over-time"],
     "resource" => ["stats"],
     "book" => ["stats"],
     "bauble" => ["stats","stats/boost", "recover/over-time"],
-    "potion" => ["stats", "stats/boost", "recover/over-time", "recover"]
-
+    "potion" => ["stats", "stats/boost", "recover/over-time", "recover"],
+    "jewelry" => ["stats", "stats/boost", "recover/over-time"],
+    "spell" => ["stats", "stats/boost", "recover/over-time"],
+    "scroll" => ["stats", "stats/boost", "recover", "recover/over-time"],
+    "food" => ["stats", "stats/boost", "recover", "recover/over-time"],
+    "drink" => ["stats", "stats/boost", "recover", "recover/over-time"]
   }
 
   @required_fields [
@@ -109,6 +113,10 @@ defmodule Data.Item do
   def basic_stats(:bauble), do: %{}
   def basic_stats(:book), do: %{}
   def basic_stats(:jewelry), do: %{}
+  def basic_stats(:spell), do: %{}
+  def basic_stats(:scroll), do: %{}
+  def basic_stats(:food), do: %{}
+  def basic_stats(:drink), do: %{}
 
   @doc """
   Create an instance of an item
