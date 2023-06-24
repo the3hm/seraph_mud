@@ -84,7 +84,7 @@ defmodule Data.Effect do
       "recover/over-time",
       "recover",
       "stats",
-      "stats/boost"
+      "stats/boost",
       "room/state"
     ]
   end
