@@ -8,6 +8,7 @@ defmodule Data.Room do
   alias Data.Exit
   alias Data.Item
   alias Data.Room.Feature
+  alias Data.Room.Weather
   alias Data.Shop
   alias Data.Zone
 
@@ -113,6 +114,19 @@ defmodule Data.Room do
     struct
     |> cast(params, [:feature_ids])
     |> validate_required([:feature_ids])
+  end
+
+  def weather_changeset(struct, params) do
+    struct
+    |> cast(params, [:weathers])
+    |> validate_required([:weathers])
+    |> Weather.validate_weathers()
+  end
+
+  def global_weather_changeset(struct, params) do
+    struct
+    |> cast(params, [:weather_ids])
+    |> validate_required([:weather_ids])
   end
 
   def exits(room) do

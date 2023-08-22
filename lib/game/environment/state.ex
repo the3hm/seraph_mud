@@ -25,7 +25,8 @@ defmodule Game.Environment.State do
       :exits,
       players: [],
       npcs: [],
-      features: []
+      features: [],
+      weathers: [],
     ]
   end
 

@@ -161,6 +161,8 @@ defmodule Web.Router do
 
     resources("/features", FeatureController)
 
+    resources("/weather", WeatherController, only: [:index, :new, :edit, :update])
+
     resources(
       "/help_topics",
       HelpTopicController,
