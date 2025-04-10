@@ -42,7 +42,7 @@ defmodule Web.ZoneTest do
 
       {:ok, zone, _room_exit} = Zone.add_overworld_exit(overworld_zone, new_exit)
 
-      assert length(zone.exits) == 1
+      assert Enum.count(zone.exits) == 1
     end
 
     test "creating an overworld exit by cell location", %{overworld_zone: overworld_zone, room: room} do
@@ -54,7 +54,7 @@ defmodule Web.ZoneTest do
 
       {:ok, zone, _room_exit} = Zone.add_overworld_exit(overworld_zone, new_exit)
 
-      assert length(zone.exits) == 1
+      assert Enum.count(zone.exits) == 1
     end
 
     test "deleting an overworld exit", %{overworld_zone: overworld_zone, room: room} do
@@ -67,7 +67,7 @@ defmodule Web.ZoneTest do
 
       {:ok, overworld_zone} = Zone.delete_overworld_exit(overworld_zone, room_exit.id)
 
-      assert length(overworld_zone.exits) == 0
+      assert Enum.empty?(overworld_zone.exits)
     end
   end
 end

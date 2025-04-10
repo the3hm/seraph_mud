@@ -39,7 +39,6 @@ defmodule Game.Session.Process do
   @timeout_check 5000
   @timeout_seconds Keyword.get(Application.compile_env(:ex_venture, :game, []), :timeout_seconds)
 
-
   #
   # GenServer callbacks
   #

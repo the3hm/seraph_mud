@@ -139,14 +139,17 @@ defmodule Game.Zone do
   """
   def name(id) do
     case Cachex.get(@key, id) do
-      {:ok, zone} when zone != nil -> {:ok, zone}
+      {:ok, zone} when zone != nil ->
+        {:ok, zone}
+
       _ ->
         case ZoneRepo.get_name(id) do
           {:ok, zone} ->
             Cachex.put(@key, zone.id, zone)
             {:ok, zone}
 
-          {:error, :unknown} -> {:error, :unknown}
+          {:error, :unknown} ->
+            {:error, :unknown}
         end
     end
   end
@@ -209,8 +212,11 @@ defmodule Game.Zone do
 
   def handle_call(:graveyard, _from, state) do
     case state.zone do
-      %{graveyard_id: graveyard_id} when graveyard_id != nil -> {:reply, {:ok, graveyard_id}, state}
-      _ -> {:reply, {:error, :no_graveyard}, state}
+      %{graveyard_id: graveyard_id} when graveyard_id != nil ->
+        {:reply, {:ok, graveyard_id}, state}
+
+      _ ->
+        {:reply, {:error, :no_graveyard}, state}
     end
   end
 
@@ -220,16 +226,19 @@ defmodule Game.Zone do
 
     #{GameMap.display_map(state, player_at, opts)}
     """
+
     {:reply, String.trim(map), state}
   end
 
   def handle_call({:map, {x, y}, _opts}, _from, %{zone: %{type: "overworld"} = zone} = state) do
     cell = %{x: x, y: y}
+
     map = """
     #{zone.name}
 
     #{Overworld.map(zone, cell)}
     """
+
     {:reply, String.trim(map), state}
   end
 
@@ -254,9 +263,14 @@ defmodule Game.Zone do
     {:noreply, Map.put(state, :zone, zone)}
   end
 
-  def handle_cast({:room_supervisor, pid}, state), do: {:noreply, Map.put(state, :room_supervisor_pid, pid)}
-  def handle_cast({:npc_supervisor, pid}, state), do: {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
-  def handle_cast({:shop_supervisor, pid}, state), do: {:noreply, Map.put(state, :shop_supervisor_pid, pid)}
+  def handle_cast({:room_supervisor, pid}, state),
+    do: {:noreply, Map.put(state, :room_supervisor_pid, pid)}
+
+  def handle_cast({:npc_supervisor, pid}, state),
+    do: {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
+
+  def handle_cast({:shop_supervisor, pid}, state),
+    do: {:noreply, Map.put(state, :shop_supervisor_pid, pid)}
 
   def handle_cast({:spawn_room, room}, %{room_supervisor_pid: pid} = state) do
     Room.Supervisor.start_child(pid, room)
@@ -277,7 +291,9 @@ defmodule Game.Zone do
   def handle_cast({:update_room, new_room, room_pid}, state) do
     rooms = Enum.reject(state.rooms, &(&1.id == new_room.id))
     room_pids = Enum.reject(state.room_pids, fn {pid, _} -> pid == room_pid end)
-    {:noreply, %{state | rooms: [new_room | rooms], room_pids: [{room_pid, new_room.id} | room_pids]}}
+
+    {:noreply,
+     %{state | rooms: [new_room | rooms], room_pids: [{room_pid, new_room.id} | room_pids]}}
   end
 
   def handle_info({:EXIT, pid, _reason}, state) do
@@ -298,14 +314,18 @@ defmodule Game.Zone do
     case find_pid(state.room_pids, pid) do
       {_pid, room_id} ->
         case Enum.find(state.rooms, &(&1.id == room_id)) do
-          nil -> {state.rooms, state.room_pids}
-          room -> {
-            Enum.reject(state.rooms, &(&1.id == room.id)),
-            Enum.reject(state.room_pids, &(elem(&1, 0) == pid))
-          }
+          nil ->
+            {state.rooms, state.room_pids}
+
+          room ->
+            {
+              Enum.reject(state.rooms, &(&1.id == room.id)),
+              Enum.reject(state.room_pids, &(elem(&1, 0) == pid))
+            }
         end
 
-      nil -> {state.rooms, state.room_pids}
+      nil ->
+        {state.rooms, state.room_pids}
     end
   end
 
@@ -313,14 +333,18 @@ defmodule Game.Zone do
     case find_pid(state.npc_pids, pid) do
       {_pid, npc_id} ->
         case Enum.find(state.npcs, &(&1.id == npc_id)) do
-          nil -> {state.npcs, state.npc_pids}
-          npc -> {
-            Enum.reject(state.npcs, &(&1.id == npc.id)),
-            Enum.reject(state.npc_pids, &(elem(&1, 0) == pid))
-          }
+          nil ->
+            {state.npcs, state.npc_pids}
+
+          npc ->
+            {
+              Enum.reject(state.npcs, &(&1.id == npc.id)),
+              Enum.reject(state.npc_pids, &(elem(&1, 0) == pid))
+            }
         end
 
-      nil -> {state.npcs, state.npc_pids}
+      nil ->
+        {state.npcs, state.npc_pids}
     end
   end
 

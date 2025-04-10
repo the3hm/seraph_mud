@@ -32,7 +32,6 @@ defmodule Game.NPC do
     end
   end
 
-
   defmodule State do
     @moduledoc """
     State for the NPC GenServer

@@ -1,6 +1,6 @@
 defmodule Game.Command.Crash do
   @moduledoc """
-  The "global" command
+  The "crash" command
   """
 
   use Game.Command
@@ -53,11 +53,11 @@ defmodule Game.Command.Crash do
   def parse(command)
   def parse("crash room"), do: {:room}
   def parse("crash zone"), do: {:zone}
-  def parse(_), do: {:error, :bad_parse, command}
+  def parse(command), do: {:error, :bad_parse, command}
 
   @impl Game.Command
   @doc """
-  Send to all connected players
+  Crash the requested process
   """
   def run(command, state)
 
@@ -73,4 +73,10 @@ defmodule Game.Command.Crash do
   def run({:zone}, %{user: user, save: save} = state) do
     if "admin" in user.flags do
       {:ok, room} = Environment.look(save.room_id)
-      room.zone_id |>_
+      @zone.crash(room.zone_id)
+      state |> Socket.echo("Sent a message to crash the zone.")
+    else
+      state |> Socket.echo("You must be an admin to perform this.")
+    end
+  end
+end

@@ -3,7 +3,6 @@ defmodule Web.Router do
 
   @report_errors Keyword.get(Application.compile_env(:ex_venture, :errors, []), :report)
 
-
   if @report_errors do
     use Plug.ErrorHandler
     use Sentry.Plug
