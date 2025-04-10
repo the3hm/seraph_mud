@@ -3,5 +3,5 @@ defmodule Game.Events.CombatTicked do
   Event for an NPC ticking in combat
   """
 
-  defstruct [type: "combat/ticked"]
+  defstruct type: "combat/ticked"
 end

@@ -28,7 +28,7 @@ defmodule Metrics.AdminInstrumenter do
     events = [
       [:exventure, :admin, :npc, :control],
       [:exventure, :admin, :npc, :control, :action],
-      [:exventure, :admin, :user, :watch],
+      [:exventure, :admin, :user, :watch]
     ]
 
     :telemetry.attach_many("exventure-admin", events, &handle_event/4, nil)
@@ -38,7 +38,12 @@ defmodule Metrics.AdminInstrumenter do
     Counter.inc(name: :exventure_admin_npc_control_count)
   end
 
-  def handle_event([:exventure, :admin, :npc, :control, :action], _count, %{action: action}, _config) do
+  def handle_event(
+        [:exventure, :admin, :npc, :control, :action],
+        _count,
+        %{action: action},
+        _config
+      ) do
     Counter.inc(name: :exventure_admin_npc_control_action_count, labels: [action])
   end
 

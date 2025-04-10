@@ -26,7 +26,7 @@ defmodule Game.Environment.State do
       players: [],
       npcs: [],
       features: [],
-      weathers: [],
+      weathers: []
     ]
   end
 

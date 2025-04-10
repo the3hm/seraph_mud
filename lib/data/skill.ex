@@ -10,7 +10,6 @@ defmodule Data.Skill do
   alias Data.ClassSkill
   alias Data.Effect
 
-
   schema "skills" do
     field(:api_id, Ecto.UUID, read_after_writes: true)
     field(:name, :string)
@@ -72,7 +71,6 @@ defmodule Data.Skill do
     |> validate_whitelist()
     |> validate_number(:cooldown_time, greater_than_or_equal_to: 0)
   end
-
 
   defp validate_whitelist(changeset) do
     case get_field(changeset, :whitelist_effects) do

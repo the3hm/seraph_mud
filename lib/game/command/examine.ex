@@ -49,7 +49,9 @@ defmodule Game.Command.Examine do
   end
 
   def run({}, state) do
-    message = "You don't know what to examine. See {command}help examine{/command} for more information."
+    message =
+      "You don't know what to examine. See {command}help examine{/command} for more information."
+
     state |> Socket.echo(message)
   end
 end

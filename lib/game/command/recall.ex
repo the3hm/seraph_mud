@@ -61,7 +61,10 @@ defmodule Game.Command.Recall do
 
       _ ->
         min = round(stats.max_endurance_points * 0.9)
-        message = "You do not have enough endurance points to recall. You must have at least #{min}ep first."
+
+        message =
+          "You do not have enough endurance points to recall. You must have at least #{min}ep first."
+
         state |> Socket.echo(message)
     end
   end

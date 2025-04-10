@@ -29,7 +29,9 @@ defmodule Game.Effect do
 
     damage_over_time = damage_over_time_effects |> Enum.map(&calculate_damage(&1, stats))
 
-    {recover_over_time_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover/over-time"))
+    {recover_over_time_effects, effects} =
+      effects |> Enum.split_with(&(&1.kind == "recover/over-time"))
+
     recover_over_time = recover_over_time_effects |> Enum.map(&calculate_recover(&1, stats))
 
     {recover_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover"))

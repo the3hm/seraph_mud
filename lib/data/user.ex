@@ -65,7 +65,7 @@ defmodule Data.User do
       :name,
       :email,
       :password,
-      :password_confirmation,
+      :password_confirmation
     ])
     |> validate_required([:name])
     |> validate_name()

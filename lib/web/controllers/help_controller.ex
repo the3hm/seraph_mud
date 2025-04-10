@@ -56,7 +56,7 @@ defmodule Web.HelpController do
   def proficiency(conn, %{"id" => id}) do
     with {id, _} <- Integer.parse(id),
          {:ok, proficiency} <- Proficiencies.get(id) do
-        conn |> render("proficiency.html", proficiency: proficiency)
+      conn |> render("proficiency.html", proficiency: proficiency)
     else
       _ ->
         conn |> redirect(to: public_page_path(conn, :index))

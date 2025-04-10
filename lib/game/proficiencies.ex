@@ -86,7 +86,7 @@ defmodule Game.Proficiencies do
     ids
     |> Enum.map(&get/1)
     |> Enum.reject(&(&1 == {:error, :not_found}))
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
   end
 
   @doc """

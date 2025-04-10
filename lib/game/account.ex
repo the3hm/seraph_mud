@@ -267,7 +267,7 @@ defmodule Game.Account do
       |> select([cp], %Proficiency.Instance{id: cp.proficiency_id, ranks: cp.ranks})
       |> Repo.all()
 
-    existing_proficiency_ids = Enum.map(player.save.proficiencies, &(&1.id))
+    existing_proficiency_ids = Enum.map(player.save.proficiencies, & &1.id)
 
     proficiencies =
       class_proficiencies

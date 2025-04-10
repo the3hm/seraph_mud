@@ -83,8 +83,4 @@ defmodule Web.Weather do
     |> Weather.changeset(params)
     |> Repo.update()
   end
-
-
-
-
 end

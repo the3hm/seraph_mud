@@ -76,7 +76,13 @@ defmodule Game.Command.Whisper do
         Character.notify(character, event)
 
         message = FormatChannels.whisper_overheard(player, character)
-        event = %RoomOverheard{character: player, characters: [player, character], message: message}
+
+        event = %RoomOverheard{
+          character: player,
+          characters: [player, character],
+          message: message
+        }
+
         Environment.notify(room.id, player, event)
     end
 

@@ -10,7 +10,8 @@ defmodule Web.AdminController do
     quote do
       use Web, :controller
 
-      import Web.AdminController, only: [ensure_user!: 2, ensure_at_least_builder!: 2, ensure_admin!: 2]
+      import Web.AdminController,
+        only: [ensure_user!: 2, ensure_at_least_builder!: 2, ensure_admin!: 2]
 
       plug(:put_layout, "admin.html")
       plug(Web.Plug.LoadUser)

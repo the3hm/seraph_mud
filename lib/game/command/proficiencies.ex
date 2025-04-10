@@ -55,7 +55,7 @@ defmodule Game.Command.Proficiencies do
   end
 
   def run({:all}, state) do
-    proficiencies = Enum.sort_by(Proficiencies.all(), &(&1.name))
+    proficiencies = Enum.sort_by(Proficiencies.all(), & &1.name)
     state |> Socket.echo(FormatProficiencies.list(proficiencies))
   end
 end

@@ -107,7 +107,8 @@ defmodule Web.Channel do
   end
 
   defp maybe_resubscribe_channel(old_channel, new_channel) do
-    case new_channel.is_gossip_connected && old_channel.gossip_channel != new_channel.gossip_channel do
+    case new_channel.is_gossip_connected &&
+           old_channel.gossip_channel != new_channel.gossip_channel do
       true ->
         if old_channel.gossip_channel, do: Gossip.unsubscribe(old_channel.gossip_channel)
         Gossip.subscribe(new_channel.gossip_channel)

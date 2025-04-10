@@ -192,7 +192,8 @@ defmodule Game.Command.Move do
         state |> Socket.echo("You cannot move while a skill is cooling down.")
 
       {:error, :not_proficient, missing_requirements} ->
-        state |> Socket.echo(FormatProficiencies.missing_requirements(direction, missing_requirements))
+        state
+        |> Socket.echo(FormatProficiencies.missing_requirements(direction, missing_requirements))
     end
   end
 

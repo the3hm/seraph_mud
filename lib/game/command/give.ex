@@ -139,7 +139,11 @@ defmodule Game.Command.Give do
 
         Socket.echo(state, message)
 
-        event = %CurrencyReceived{character: Character.to_simple(state.character), amount: currency}
+        event = %CurrencyReceived{
+          character: Character.to_simple(state.character),
+          amount: currency
+        }
+
         Character.notify(character, event)
 
         state = Player.update_save(state, %{save | currency: save.currency - currency})

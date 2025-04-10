@@ -9,7 +9,9 @@ defmodule Web.Admin.CharacterController do
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "character", %{})
-    %{page: characters, pagination: pagination} = Character.all(filter: filter, page: page, per: per)
+
+    %{page: characters, pagination: pagination} =
+      Character.all(filter: filter, page: page, per: per)
 
     conn
     |> assign(:characters, characters)

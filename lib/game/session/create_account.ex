@@ -47,9 +47,7 @@ defmodule Game.Session.CreateAccount do
       {:error, changeset} ->
         state
         |> Socket.echo(
-          "There was a problem creating your account.\nPlease start over.\n#{
-            changeset_errors(changeset)
-          }"
+          "There was a problem creating your account.\nPlease start over.\n#{changeset_errors(changeset)}"
         )
 
         state |> Socket.prompt("Name: ")

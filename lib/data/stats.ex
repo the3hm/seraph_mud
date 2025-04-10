@@ -99,7 +99,20 @@ defmodule Data.Stats do
   """
   @spec slots() :: [atom]
   def slots(),
-    do: [:chest, :head, :shoulders, :neck, :back, :hands, :waist, :legs, :feet, :leftfinger, :rightfinger, :goggles]
+    do: [
+      :chest,
+      :head,
+      :shoulders,
+      :neck,
+      :back,
+      :hands,
+      :waist,
+      :legs,
+      :feet,
+      :leftfinger,
+      :rightfinger,
+      :goggles
+    ]
 
   @doc """
   Fields in the statistics map

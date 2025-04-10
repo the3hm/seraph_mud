@@ -142,7 +142,9 @@ defmodule Game.Command.Shops do
   end
 
   def run({:help}, state) do
-    message = "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
+    message =
+      "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
+
     state |> Socket.echo(message)
   end
 

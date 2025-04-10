@@ -82,7 +82,9 @@ defmodule Game.Command.Use do
   end
 
   def run({}, state) do
-    message = "You are not sure what to use. See {command}help use{/command} for more information."
+    message =
+      "You are not sure what to use. See {command}help use{/command} for more information."
+
     state |> Socket.echo(message)
   end
 
@@ -126,7 +128,10 @@ defmodule Game.Command.Use do
       )
 
     effects_message =
-      Enum.join([description | FormatEffects.effects(effects, Character.to_simple(state.character))], "\n")
+      Enum.join(
+        [description | FormatEffects.effects(effects, Character.to_simple(state.character))],
+        "\n"
+      )
 
     state |> Socket.echo(effects_message)
 

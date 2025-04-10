@@ -103,7 +103,7 @@ defmodule Data.Exit do
         changeset
 
       requirements ->
-        case Enum.all?(requirements, &(&1.valid?)) do
+        case Enum.all?(requirements, & &1.valid?) do
           true ->
             changeset
 

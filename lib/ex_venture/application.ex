@@ -30,6 +30,7 @@ defmodule ExVenture.Application do
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
 
     report_errors = Application.get_env(:ex_venture, :errors)[:report]
+
     if report_errors do
       {:ok, _} = Logger.add_backend(Sentry.LoggerBackend)
     end

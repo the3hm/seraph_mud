@@ -60,7 +60,7 @@ defmodule Web.Class do
       class_skills:
         ^from(cs in ClassSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id])
     )
-    |> preload([class_proficiencies: [:proficiency], class_skills: [:skill]])
+    |> preload(class_proficiencies: [:proficiency], class_skills: [:skill])
     |> Repo.one()
   end
 

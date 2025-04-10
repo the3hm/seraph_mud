@@ -238,7 +238,9 @@ defmodule Networking.Protocol do
       :mssp ->
         Logger.info("Sending MSSP", type: :socket)
 
-        mssp = <<@iac, @sb, @mssp>> <> MSSP.name() <> MSSP.players() <> MSSP.uptime() <> <<@iac, @se>>
+        mssp =
+          <<@iac, @sb, @mssp>> <> MSSP.name() <> MSSP.players() <> MSSP.uptime() <> <<@iac, @se>>
+
         send_data(state, mssp)
 
         {:noreply, state}

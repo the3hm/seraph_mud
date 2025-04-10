@@ -116,7 +116,13 @@ defmodule Game.Command.Tell do
         message = Utility.strip_name(npc, message)
         message = Message.format(message)
         state |> Socket.echo(FormatChannels.send_tell(Character.to_simple(npc), message))
-        Channel.tell(Character.to_simple(npc), Character.to_simple(from), Message.tell(from, message))
+
+        Channel.tell(
+          Character.to_simple(npc),
+          Character.to_simple(from),
+          Message.tell(from, message)
+        )
+
         {:update, %{state | reply_to: npc}}
 
       true ->

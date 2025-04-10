@@ -129,7 +129,10 @@ defmodule Web.Router do
     resources("/channels", ChannelController, except: [:delete])
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
-      resources("/proficiencies", ClassProficiencyController, only: [:new, :create], as: :proficiency)
+      resources("/proficiencies", ClassProficiencyController,
+        only: [:new, :create],
+        as: :proficiency
+      )
 
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end

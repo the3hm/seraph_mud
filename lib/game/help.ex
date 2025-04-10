@@ -38,7 +38,7 @@ defmodule Game.Help do
       end)
 
     topics = commands ++ built_ins
-    topics = Enum.sort_by(topics, &(&1.name))
+    topics = Enum.sort_by(topics, & &1.name)
 
     FormatHelp.base(topics)
   end

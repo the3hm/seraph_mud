@@ -262,7 +262,9 @@ defmodule Game.Command.Quest do
         {:update, state}
 
       _ ->
-        message = "Something went wrong, please contact the administrators if you encounter a problem again."
+        message =
+          "Something went wrong, please contact the administrators if you encounter a problem again."
+
         state |> Socket.echo(message)
     end
   end
@@ -288,7 +290,9 @@ defmodule Game.Command.Quest do
   defp maybe_complete(:ok, _), do: :ok
 
   defp maybe_complete(nil, state) do
-    message = "You cannot complete a quest in this room. Find the quest giver or complete required steps."
+    message =
+      "You cannot complete a quest in this room. Find the quest giver or complete required steps."
+
     state |> Socket.echo(message)
   end
 

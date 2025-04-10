@@ -48,7 +48,9 @@ defmodule Game.Command.Drop do
   end
 
   def run({}, state) do
-    message = "Please provide an item to drop. See {command}help drop{/command} for more information."
+    message =
+      "Please provide an item to drop. See {command}help drop{/command} for more information."
+
     state |> Socket.echo(message)
   end
 

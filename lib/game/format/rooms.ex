@@ -226,7 +226,7 @@ defmodule Game.Format.Rooms do
         items = Enum.reject(items, &(&1 == ""))
 
         context()
-        |> assign_many(:items, items, &(&1), joiner: ", ")
+        |> assign_many(:items, items, & &1, joiner: ", ")
         |> Format.template("Items: [items]")
     end
   end

@@ -140,7 +140,9 @@ defmodule Game.Command.PickUp do
   end
 
   def run({verb, :help}, state) do
-    message = "You don't know what to #{verb}. See {command}help get{/command} for more information."
+    message =
+      "You don't know what to #{verb}. See {command}help get{/command} for more information."
+
     state |> Socket.echo(message)
   end
 
