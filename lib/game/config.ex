@@ -214,7 +214,8 @@ defmodule Game.Config do
         nil
 
       save ->
-        {:ok, save} = Save.load(Poison.decode!(save))
+        {:ok, save} = Save.load(Jason
+.decode!(save))
         save
     end
   end
@@ -225,7 +226,8 @@ defmodule Game.Config do
         []
 
       room_ids ->
-        Poison.decode!(room_ids)
+        Jason
+.decode!(room_ids)
     end
   end
 
@@ -298,7 +300,8 @@ defmodule Game.Config do
         @basic_stats
 
       stats ->
-        {:ok, stats} = Stats.load(Poison.decode!(stats))
+        {:ok, stats} = Stats.load(Jason
+.decode!(stats))
         stats
     end
   end

@@ -5,7 +5,8 @@ defmodule Web.Admin.RaceControllerTest do
     params = %{
       "name" => "Fighter",
       "description" => "A fighter",
-      "starting_stats" => base_stats() |> Poison.encode!(),
+      "starting_stats" => base_stats() |> Jason
+.encode!(),
     }
 
     conn = post conn, race_path(conn, :create), race: params

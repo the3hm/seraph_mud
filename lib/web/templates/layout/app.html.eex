@@ -31,7 +31,8 @@
 
     <script type="application/javascript">
 <%= if Map.has_key?(assigns, :current_character) do %>
-window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
+window.gameConfig = <%= raw(Jason
+.encode!(game_config(@current_character))) %>
 <% end %>
     </script>
   </head>

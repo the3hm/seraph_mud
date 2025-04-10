@@ -10,7 +10,8 @@ defmodule Web.CharacterTest do
 
   describe "creating a character" do
     setup do
-      create_config(:starting_save, base_save() |> Poison.encode!)
+      create_config(:starting_save, base_save() |> Jason
+.encode!)
       class = create_class()
       race = create_race()
 
@@ -87,7 +88,8 @@ defmodule Web.CharacterTest do
   end
 
   def with_config(_) do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Jason
+.encode!)
     :ok
   end
 end

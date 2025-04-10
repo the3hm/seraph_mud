@@ -10,7 +10,8 @@ defmodule Web.Admin.QuestControllerTest do
       "completed_message" => "The quest is done",
       "script" => [
         %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
-      ] |> Poison.encode!(),
+      ] |> Jason
+.encode!(),
       "level" => 1,
       "experience" => 100,
       "giver_id" => npc.id,

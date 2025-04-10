@@ -12,7 +12,8 @@ defmodule Web.NPCTest do
       "tags" => "enemy, dungeon",
       "script" => [
         %{"key" => "start", "message" => "Hi"},
-      ] |> Poison.encode!(),
+      ] |> Jason
+.encode!(),
       "stats" => %{
         health_points: 25,
         max_health_points: 25,
@@ -26,7 +27,8 @@ defmodule Web.NPCTest do
         awareness: 10,
         vitality: 13,
         willpower: 10,
-      } |> Poison.encode!(),
+      } |> Jason
+.encode!(),
     }
 
     {:ok, npc} = NPC.create(params)
@@ -173,14 +175,16 @@ defmodule Web.NPCTest do
         ]
       }
 
-      {:ok, npc} = NPC.add_event(npc, Poison.encode!(event))
+      {:ok, npc} = NPC.add_event(npc, Jason
+.encode!(event))
 
       assert length(npc.events) == 2
     end
 
     test "edit an event", %{npc: npc, event: event} do
       event = %{event | "actions" => [%{type: "commands/say", options: %{message: "Hello"}}]}
-      {:ok, npc} = NPC.edit_event(npc, event["id"], Poison.encode!(event))
+      {:ok, npc} = NPC.edit_event(npc, event["id"], Jason
+.encode!(event))
 
       event = List.first(npc.events)
       action = List.first(event["actions"])

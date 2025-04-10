@@ -21,7 +21,8 @@ defmodule Web.RaceTest do
         awareness: 10,
         vitality: 13,
         willpower: 10,
-      } |> Poison.encode!(),
+      } |> Jason
+.encode!(),
     }
 
     {:ok, race} = Race.create(params)

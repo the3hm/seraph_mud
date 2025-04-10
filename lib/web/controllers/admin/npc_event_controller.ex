@@ -56,7 +56,7 @@ defmodule Web.Admin.NPCEventController do
         conn
         |> assign(:npc, npc)
         |> assign(:event, event)
-        |> assign(:field, Poison.encode!(event, pretty: true))
+        |> assign(:field, event |> Jason.encode!() |> Jason.Formatter.pretty_print())
         |> render("edit.html")
     end
   end

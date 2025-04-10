@@ -6,17 +6,18 @@ defmodule Web.JSONHelper do
   import Phoenix.HTML, only: [raw: 1]
 
   @doc """
-  Encode a map as JSON
+  Encode a map as pretty-printed JSON (HTML safe)
   """
   @spec encode_json(map) :: String.t()
   def encode_json(map) do
     map
-    |> Poison.encode!()
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
     |> raw()
   end
 
   @doc """
-  Get a field from a changeset and display as JSON
+  Get a field from a changeset and display as pretty JSON
   """
   @spec json_field(Ecto.Changeset.t(), atom) :: String.t()
   def json_field(changeset, field) do
@@ -31,8 +32,9 @@ defmodule Web.JSONHelper do
   defp parse_value(nil), do: ""
 
   defp parse_value(value) do
-    case Poison.encode(value, pretty: true) do
-      {:ok, value} -> value
+    with {:ok, encoded} <- Jason.encode(value) do
+      Jason.Formatter.pretty_print(encoded)
+    else
       _ -> ""
     end
   end

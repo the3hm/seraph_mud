@@ -47,7 +47,8 @@ defmodule Web.Exit do
   end
 
   defp parse_requirements(params = %{"requirements" => requirements}) do
-    case Poison.decode(requirements) do
+    case Jason
+.decode(requirements) do
       {:ok, requirements} ->
         Map.put(params, "requirements", requirements)
 

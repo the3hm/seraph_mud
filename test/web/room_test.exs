@@ -206,7 +206,8 @@ defmodule Web.RoomTest do
     end
 
     test "does not delete the starting room", %{room: room} do
-      create_config(:starting_save, %{room_id: room.id} |> Poison.encode!())
+      create_config(:starting_save, %{room_id: room.id} |> Jason
+.encode!())
 
       assert {:error, :starting_room, _room} = Room.delete(room.id)
     end

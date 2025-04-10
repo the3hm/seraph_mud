@@ -63,11 +63,11 @@ config :mime, :types, %{
 }
 
 config :phoenix, :format_encoders,
-  collection: Poison,
-  hal: Poison,
-  mason: Poison,
-  siren: Poison,
-  jsonapi: Poison
+  collection: Jason,
+  hal: Jason,
+  mason: Jason,
+  siren: Jason,
+  jsonapi: Jason
 
 config :phoenix, :json_library, Jason
 

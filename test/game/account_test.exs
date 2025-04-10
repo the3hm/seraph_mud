@@ -9,7 +9,8 @@ defmodule Game.AccountTest do
 
   describe "creating an account" do
     test "successfully" do
-      create_config(:starting_save, base_save() |> Poison.encode!)
+      create_config(:starting_save, base_save() |> Jason
+.encode!)
       human = create_race()
       fighter = create_class()
 

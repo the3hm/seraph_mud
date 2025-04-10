@@ -20,14 +20,16 @@ defmodule Web.Admin.ConfigView do
   def basic_stats_value(changeset) do
     changeset
     |> Changeset.get_field(:value, Config.basic_stats())
-    |> Poison.decode!()
-    |> Poison.encode!(pretty: true)
+    |> Jason.decode!()
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
   end
 
   def starting_save_value(changeset) do
     changeset
     |> Changeset.get_field(:value)
-    |> Poison.decode!()
-    |> Poison.encode!(pretty: true)
+    |> Jason.decode!()
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
   end
 end

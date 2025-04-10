@@ -459,7 +459,8 @@ defmodule Networking.Protocol do
       type: :socket
     )
 
-    case Poison.decode(supports) do
+    case Jason
+.decode(supports) do
       {:ok, supports} ->
         supports = remove_version_numbers(supports)
         supports = supports ++ state.gmcp_supports
@@ -488,7 +489,8 @@ defmodule Networking.Protocol do
     module = String.trim(module)
     data = String.replace(message, module, "", global: false)
 
-    with {:ok, data} <- Poison.decode(data) do
+    with {:ok, data} <- Jason
+.decode(data) do
       state.session |> Game.Session.recv_gmcp(module, data)
 
       {:noreply, state}
@@ -564,7 +566,8 @@ defmodule Networking.Protocol do
 
   defp push_client_map(state) do
     data = %{url: RoutesHelper.public_page_url(Endpoint, :map), version: "1"}
-    data = Poison.encode!(data)
+    data = Jason
+.encode!(data)
 
     message = <<@iac, @sb, @gmcp>> <> "Client.Map " <> data <> <<@iac, @se>>
     send_data(state, message)

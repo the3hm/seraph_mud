@@ -28,7 +28,8 @@ defmodule Game.Session.GMCP do
       end)
       |> Enum.into(%{})
 
-    state |> Socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
+    state |> Socket.push_gmcp("External.Discord.Info", data |> Jason
+.encode!())
   end
 
   def handle_gmcp(state, "External.Discord.Get", _data) do
@@ -61,7 +62,8 @@ defmodule Game.Session.GMCP do
       }
     }
 
-    state |> Socket.push_gmcp("Character.Info", data |> Poison.encode!())
+    state |> Socket.push_gmcp("Character.Info", data |> Jason
+.encode!())
   end
 
   @doc """
@@ -72,14 +74,16 @@ defmodule Game.Session.GMCP do
       save.stats
       |> Map.put(:experience_towards_level, rem(save.experience_points, 1000))
 
-    state |> Socket.push_gmcp("Character.Vitals", vitals |> Poison.encode!())
+    state |> Socket.push_gmcp("Character.Vitals", vitals |> Jason
+.encode!())
   end
 
   @doc """
   Push Room.Info data
   """
   def room(state, room, items) do
-    state |> Socket.push_gmcp("Room.Info", room |> room_info(items) |> Poison.encode!())
+    state |> Socket.push_gmcp("Room.Info", room |> room_info(items) |> Jason
+.encode!())
   end
 
   @doc """
@@ -91,7 +95,8 @@ defmodule Game.Session.GMCP do
     state
     |> Socket.push_gmcp(
       "Room.Character.Enter",
-      character |> character_info() |> Poison.encode!()
+      character |> character_info() |> Jason
+.encode!()
     )
   end
 
@@ -104,7 +109,8 @@ defmodule Game.Session.GMCP do
     state
     |> Socket.push_gmcp(
       "Room.Character.Leave",
-      character |> character_info() |> Poison.encode!()
+      character |> character_info() |> Jason
+.encode!()
     )
   end
 
@@ -112,14 +118,16 @@ defmodule Game.Session.GMCP do
   Send the player's target info
   """
   def target(state, character) do
-    Socket.push_gmcp(state, "Target.Character", character |> character_info() |> Poison.encode!())
+    Socket.push_gmcp(state, "Target.Character", character |> character_info() |> Jason
+.encode!())
   end
 
   @doc """
   A character targeted the player
   """
   def counter_targeted(state, character) do
-    state |> Socket.push_gmcp("Target.You", character |> character_info() |> Poison.encode!())
+    state |> Socket.push_gmcp("Target.You", character |> character_info() |> Jason
+.encode!())
   end
 
   @doc """
@@ -133,7 +141,8 @@ defmodule Game.Session.GMCP do
   Send a map message
   """
   def map(state, map) do
-    state |> Socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
+    state |> Socket.push_gmcp("Zone.Map", %{map: map} |> Jason
+.encode!())
   end
 
   @doc """
@@ -147,7 +156,8 @@ defmodule Game.Session.GMCP do
       formatted: message.formatted
     }
 
-    state |> Socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
+    state |> Socket.push_gmcp("Channels.Broadcast", Jason
+.encode!(data))
   end
 
   @doc """
@@ -159,7 +169,8 @@ defmodule Game.Session.GMCP do
       message: message.message
     }
 
-    state |> Socket.push_gmcp("Channels.Tell", Poison.encode!(data))
+    state |> Socket.push_gmcp("Channels.Tell", Jason
+.encode!(data))
   end
 
   @doc """
@@ -171,7 +182,8 @@ defmodule Game.Session.GMCP do
       message: message.message
     }
 
-    state |> Socket.push_gmcp("Room.Heard", Poison.encode!(data))
+    state |> Socket.push_gmcp("Room.Heard", Jason
+.encode!(data))
   end
 
   @doc """
@@ -183,7 +195,8 @@ defmodule Game.Session.GMCP do
       message: message.message
     }
 
-    state |> Socket.push_gmcp("Room.Whisper", Poison.encode!(data))
+    state |> Socket.push_gmcp("Room.Whisper", Jason
+.encode!(data))
   end
 
   @doc """
@@ -196,14 +209,16 @@ defmodule Game.Session.GMCP do
       title: mail.title
     }
 
-    state |> Socket.push_gmcp("Mail.New", Poison.encode!(data))
+    state |> Socket.push_gmcp("Mail.New", Jason
+.encode!(data))
   end
 
   @doc """
   Push player configuration to the client
   """
   def config(state, config) do
-    state |> Socket.push_gmcp("Config.Update", Poison.encode!(config))
+    state |> Socket.push_gmcp("Config.Update", Jason
+.encode!(config))
   end
 
   @doc """
@@ -217,7 +232,8 @@ defmodule Game.Session.GMCP do
 
     data = %{actions: actions}
 
-    state |> Socket.push_gmcp("Config.Actions", Poison.encode!(data))
+    state |> Socket.push_gmcp("Config.Actions", Jason
+.encode!(data))
   end
 
   def config_action_transform(action = %{type: "skill"}) do
@@ -238,7 +254,8 @@ defmodule Game.Session.GMCP do
   Push Core.Heartbeat
   """
   def heartbeat(state) do
-    state |> Socket.push_gmcp("Core.Heartbeat", Poison.encode!(%{}))
+    state |> Socket.push_gmcp("Core.Heartbeat", Jason
+.encode!(%{}))
   end
 
   @doc """
@@ -252,7 +269,8 @@ defmodule Game.Session.GMCP do
       active: opts[:active]
     }
 
-    state |> Socket.push_gmcp("Character.Skill", Poison.encode!(data))
+    state |> Socket.push_gmcp("Character.Skill", Jason
+.encode!(data))
   end
 
   @doc """
@@ -274,7 +292,8 @@ defmodule Game.Session.GMCP do
 
     data = %{skills: skills}
 
-    state |> Socket.push_gmcp("Character.Skills", Poison.encode!(data))
+    state |> Socket.push_gmcp("Character.Skills", Jason
+.encode!(data))
   end
 
   @doc """
@@ -286,7 +305,8 @@ defmodule Game.Session.GMCP do
       starttime: state.session_started_at |> Timex.to_unix()
     }
 
-    state |> Socket.push_gmcp("External.Discord.Status", data |> Poison.encode!())
+    state |> Socket.push_gmcp("External.Discord.Status", data |> Jason
+.encode!())
   end
 
   defp room_info(room, items) do

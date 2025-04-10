@@ -12,7 +12,8 @@ defmodule Web.QuestTest do
       "completed_message" => "Thank goodness you did it",
       "script" => [
         %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
-      ] |> Poison.encode!(),
+      ] |> Jason
+.encode!(),
       "giver_id" => npc.id,
       "level" => 1,
       "experience" => 100,

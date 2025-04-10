@@ -69,21 +69,21 @@
               </tr>
               <tr>
                 <th>Basic Stats</th>
-                <td><pre><%= Config.basic_stats() |> Poison.encode!(pretty: true) %></pre></td>
+                <td><pre><%= Config.basic_stats() |> Jason.encode!() |> Jason.Formatter.pretty_print() %></pre></td>
                 <td>
                   <%= link("Edit", to: config_path(@conn, :edit, "basic_stats"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
               <tr>
                 <th>Starting Save</th>
-                <td><pre><%= Config.starting_save() |> Poison.encode!(pretty: true) %></pre></td>
+                <td><pre><%= Config.starting_save() |> Jason.encode!() |> Jason.Formatter.pretty_print() %></pre></td>
                 <td>
                   <%= link("Edit", to: config_path(@conn, :edit, "starting_save"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
               <tr>
                 <th>Starting Room IDs</th>
-                <td><pre><%= Config.starting_room_ids() |> Poison.encode!(pretty: true) %></pre></td>
+                <td><pre><%= Config.starting_room_ids() |> Jason.encode!() |> Jason.Formatter.pretty_print() %></pre></td>
                 <td>
                   <%= link("Edit", to: config_path(@conn, :edit, "starting_room_ids"), class: "btn btn-default btn-xs") %>
                 </td>

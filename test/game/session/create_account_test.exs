@@ -61,7 +61,8 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "ask for an optional email", %{state: state, race: human, class: fighter} do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Jason
+.encode!)
 
     state = CreateAccount.process("user@example.com", %{state | create: %{name: "user", race: human, class: fighter}})
 
@@ -70,7 +71,8 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "ask for an optional email - give none", %{state: state, race: human, class: fighter} do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Jason
+.encode!)
 
     state = CreateAccount.process("", %{state | create: %{name: "user", race: human, class: fighter}})
 
@@ -79,7 +81,8 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "request email again if it doesn't have an @ sign", %{state: state, race: human, class: fighter} do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Jason
+.encode!)
 
     state = CreateAccount.process("userexample.com", %{state | create: %{name: "user", race: human, class: fighter}})
 
@@ -88,7 +91,8 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "create the account after password is entered", %{state: state, race: human, class: fighter} do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Jason
+.encode!)
     create_config(:after_sign_in_message, "Hi")
 
     state = CreateAccount.process("password", %{state | create: %{name: "user", email: "", race: human, class: fighter}})
@@ -100,7 +104,8 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "failure creating the account after entering the password", %{state: state, race: human, class: fighter} do
-    create_config(:starting_save, %{} |> Poison.encode!)
+    create_config(:starting_save, %{} |> Jason
+.encode!)
     state = CreateAccount.process("", %{state | create: %{name: "user", email: "", race: human, class: fighter}})
 
     refute Map.has_key?(state, :create)

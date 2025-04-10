@@ -160,7 +160,8 @@
             </div>
           </div>
           <div class="box-body">
-            <div id="map-data" data-map="<%= Poison.encode!(@zone.overworld_map) %>" />
+            <div id="map-data" data-map="<%= Jason
+.encode!(@zone.overworld_map) %>" />
             <%= form_tag zone_overworld_path(@conn, :update, @zone.id), method: "PUT" do %>
               <%= React.react_component("Components.WorldMap", colors: Color.color_keys()) %>
             <% end %>

@@ -107,7 +107,7 @@
           <h3 class="box-title">Effects</h3>
         </div>
         <div class="box-body">
-          <pre><%= Poison.encode!(@skill.effects, pretty: true) %></pre>
+          <pre><%= Jason.encode!(@skill.effects) |> Jason.Formatter.pretty_print() %></pre>
         </div>
       </div>
     </div>

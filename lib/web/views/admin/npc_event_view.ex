@@ -1,4 +1,8 @@
 defmodule Web.Admin.NPCEventView do
+  @moduledoc """
+  View helpers for rendering NPC events
+  """
+
   use Web, :view
 
   alias Data.Events
@@ -6,24 +10,27 @@ defmodule Web.Admin.NPCEventView do
 
   def parse(event) do
     case Events.parse(event) do
-      {:ok, event} ->
+      {:ok, parsed_event} ->
         content_tag(:pre) do
-          Jason.encode!(event, pretty: true)
+          parsed_event
+          |> Jason.encode!()
+          |> Jason.Formatter.pretty_print()
         end
 
       {:error, error} ->
-        error = content_tag(:code, inspect(error))
+        error_msg = content_tag(:code, inspect(error))
 
-        pre =
-          content_tag(:pre) do
-            Jason.encode!(event, pretty: true)
-          end
+        fallback_json =
+          event
+          |> Jason.encode!()
+          |> Jason.Formatter.pretty_print()
+          |> content_tag(:pre)
 
         [
           "Error parsing the event: ",
-          error,
+          error_msg,
           ". Showing the underlying data instead.",
-          pre
+          fallback_json
         ]
     end
   end

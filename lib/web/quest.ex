@@ -128,7 +128,8 @@ defmodule Web.Quest do
   end
 
   defp parse_script(params = %{"script" => script}) do
-    case Poison.decode(script) do
+    case Jason
+.decode(script) do
       {:ok, script} -> script |> cast_script(params)
       _ -> params
     end

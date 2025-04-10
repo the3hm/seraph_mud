@@ -64,6 +64,7 @@
 </div>
 
 <script type="application/javascript">
-  var basicStats = <%= raw(Poison.encode!(Config.basic_stats())) %>;
+  var basicStats = <%= raw(Jason
+.encode!(Config.basic_stats())) %>;
   new NPCLeveler(basicStats, document.getElementById("npc_level"), document.getElementById("npc_stats"));
 </script>

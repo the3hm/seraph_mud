@@ -144,7 +144,8 @@ defmodule Web.Zone do
   end
 
   defp parse_map(params = %{"overworld_map" => overworld_map}) do
-    case Poison.decode(overworld_map) do
+    case Jason
+.decode(overworld_map) do
       {:ok, overworld_map} ->
         overworld_map = cast_map(overworld_map)
         Map.put(params, "overworld_map", overworld_map)

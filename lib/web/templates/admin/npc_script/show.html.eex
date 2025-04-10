@@ -27,7 +27,7 @@
         </div>
         <div class="box-body">
           <%= if @npc.script do %>
-            <pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre>
+            <pre><%= Jason.encode!(@npc.script) |> Jason.Formatter.pretty_print() %></pre>
           <% end %>
         </div>
       </div>

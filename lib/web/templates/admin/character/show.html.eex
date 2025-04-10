@@ -131,7 +131,7 @@
                 <tr>
                   <td><%= link(progress.quest.name, to: quest_path(@conn, :show, progress.quest_id)) %></td>
                   <td><%= progress.status %></td>
-                  <td><%= progress.progress |> Poison.encode!(pretty: true) %></td>
+                  <td><%= progress.progress |> Jason.encode!() |> Jason.Formatter.pretty_print() %></td>
                 </tr>
               <% end) %>
             </tbody>
@@ -148,7 +148,7 @@
           <h3 class="box-title">Save</h3>
         </div>
         <div class="box-body">
-          <pre><%= @character.save |> Poison.encode!(pretty: true) %></pre>
+          <pre><%= @character.save |> Jason.encode!() |> Jason.Formatter.pretty_print() %></pre>
         </div>
       </div>
     </div>

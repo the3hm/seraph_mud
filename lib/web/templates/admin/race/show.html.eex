@@ -35,9 +35,12 @@
               <td><%= @race.description %></td>
             </tr>
             <tr>
-              <th>Starting stats</th>
-              <td><pre><%= @race.starting_stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
-            </tr>
+          <th>Starting stats</th>
+          <td>
+            <pre><%= pretty_json(Stats.default(@race.starting_stats)) %></pre>
+          </td>
+        </tr>
+
           </table>
         </div>
       </div>
