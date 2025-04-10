@@ -13,6 +13,9 @@ defmodule Game.PGNotifications do
   alias Game.Help.Agent, as: HelpAgent
   alias Game.Items
 
+  # Compile-time evaluation of the configuration
+  @repo_config Application.compile_env(:ex_venture, Data.Repo, [])
+
   def start_link(opts) do
     GenServer.start_link(__MODULE__, [], opts)
   end
@@ -30,8 +33,7 @@ defmodule Game.PGNotifications do
 
       {:noreply, state}
     else
-      error ->
-        {:stop, error, state}
+      error -> {:stop, error, state}
     end
   end
 
@@ -40,8 +42,7 @@ defmodule Game.PGNotifications do
       update_local_cache(data)
       {:noreply, state}
     else
-      error ->
-        {:stop, error, state}
+      error -> {:stop, error, state}
     end
   end
 
@@ -69,19 +70,13 @@ defmodule Game.PGNotifications do
     map =
       map
       |> Map.take(fields)
-      |> Enum.into(%{}, fn {key, val} ->
-        {String.to_atom(key), val}
-      end)
+      |> Enum.into(%{}, fn {key, val} -> {String.to_atom(key), val} end)
 
     struct(schema, map)
   end
 
   defp listen(event_name) do
-    opts =
-      Keyword.take(
-        Application.compile_env(:ex_venture, Data.Repo, []),
-        [:username, :database, :hostname, :port, :password]
-      )
+    opts = Keyword.take(@repo_config, [:username, :database, :hostname, :port, :password])
 
     with {:ok, pid} <- Postgrex.Notifications.start_link(opts),
          {:ok, ref} <- Postgrex.Notifications.listen(pid, event_name) do

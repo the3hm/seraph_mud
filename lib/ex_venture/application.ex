@@ -3,8 +3,10 @@ defmodule ExVenture.Application do
   # for more information on OTP Applications
   @moduledoc false
 
+  # These are safe to be evaluated at compile time
   @server Application.compile_env(:ex_venture, :networking, [])[:server]
   @cluster_size Application.compile_env(:ex_venture, :cluster, [])[:size]
+  @report_errors Application.compile_env(:ex_venture, :errors, [])[:report]
 
   use Application
 
@@ -25,19 +27,18 @@ defmodule ExVenture.Application do
 
     Metrics.Setup.setup()
 
-    opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
-
-    report_errors = Application.compile_env(:ex_venture, :errors, [])[:report]
-
-    if report_errors do
+    # Set up error reporting if enabled
+    if @report_errors do
       {:ok, _} = Logger.add_backend(Sentry.LoggerBackend)
     end
+
+    opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
 
     Supervisor.start_link(children, opts)
   end
 
   defp cluster_supervisor() do
-    topologies = Application.compile_env(:libcluster, :topologies, nil)
+    topologies = Application.get_env(:libcluster, :topologies, nil)
 
     if topologies && Code.ensure_compiled?(Cluster.Supervisor) do
       {Cluster.Supervisor, [topologies, [name: ExVenture.ClusterSupervisor]]}
@@ -47,8 +48,8 @@ defmodule ExVenture.Application do
   defp listener() do
     case @server do
       true ->
-        import Supervisor.Spec, warn: false
-        worker(Networking.Listener, [])
+        # Replaced worker/2 with Supervisor.child_spec/3
+        Supervisor.child_spec({Networking.Listener, []}, id: Networking.Listener)
 
       false ->
         nil

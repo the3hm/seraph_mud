@@ -437,7 +437,7 @@ defmodule Networking.Protocol do
         fun.(:ayt)
 
       <<@iac, data::binary>> ->
-        Logger.warn("Got weird iac data - #{inspect(data)}")
+        Logger.warning("Got weird iac data - #{inspect(data)}")
         fun.(:iac)
 
       _ ->
@@ -459,8 +459,7 @@ defmodule Networking.Protocol do
       type: :socket
     )
 
-    case Jason
-.decode(supports) do
+    case Jason.decode(supports) do
       {:ok, supports} ->
         supports = remove_version_numbers(supports)
         supports = supports ++ state.gmcp_supports
@@ -489,8 +488,7 @@ defmodule Networking.Protocol do
     module = String.trim(module)
     data = String.replace(message, module, "", global: false)
 
-    with {:ok, data} <- Jason
-.decode(data) do
+    with {:ok, data} <- Jason.decode(data) do
       state.session |> Game.Session.recv_gmcp(module, data)
 
       {:noreply, state}
@@ -539,7 +537,7 @@ defmodule Networking.Protocol do
 
   def broadcast(%{character_id: character_id}, data) when is_integer(character_id) do
     case data do
-      <<@iac, _data::binary()>> ->
+      <<@iac, _data::binary>> ->
         :ok
 
       _ ->
@@ -566,8 +564,7 @@ defmodule Networking.Protocol do
 
   defp push_client_map(state) do
     data = %{url: RoutesHelper.public_page_url(Endpoint, :map), version: "1"}
-    data = Jason
-.encode!(data)
+    data = Jason.encode!(data)
 
     message = <<@iac, @sb, @gmcp>> <> "Client.Map " <> data <> <<@iac, @se>>
     send_data(state, message)

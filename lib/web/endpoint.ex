@@ -29,7 +29,6 @@ defmodule Web.Endpoint do
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Jason
-
   )
 
   plug(Plug.MethodOverride)

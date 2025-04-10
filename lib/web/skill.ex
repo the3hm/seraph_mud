@@ -133,8 +133,7 @@ defmodule Web.Skill do
   end
 
   defp parse_effects(params = %{"effects" => effects}) do
-    case Jason
-.decode(effects) do
+    case Jason.decode(effects) do
       {:ok, effects} -> effects |> cast_effects(params)
       _ -> params
     end

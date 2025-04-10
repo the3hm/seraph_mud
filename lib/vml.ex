@@ -29,7 +29,7 @@ defmodule VML do
         parse_tokens(tokens)
 
       {:error, {_, _, reason}} ->
-        Logger.warn("Encountered a lexing error for #{inspect(string)} - #{inspect(reason)}")
+        Logger.warning("Encountered a lexing error for #{inspect(string)} - #{inspect(reason)}")
         {:error, :lexer, reason}
     end
   end
@@ -96,7 +96,7 @@ defmodule VML do
         {:ok, pre_process(ast)}
 
       {:error, {_, _, reason}} ->
-        Logger.warn("Encountered a parsing error for #{inspect(tokens)} - #{inspect(reason)}")
+        Logger.warning("Encountered a parsing error for #{inspect(tokens)} - #{inspect(reason)}")
         {:error, :parser, reason}
     end
   end

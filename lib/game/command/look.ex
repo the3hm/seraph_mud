@@ -134,7 +134,7 @@ defmodule Game.Command.Look do
     room_map =
       mini_map
       |> String.split("\n")
-      |> Enum.slice(2..-1)
+      |> Enum.slice(2..-1//-1)
       |> Enum.join("\n")
 
     items = room_items(room)

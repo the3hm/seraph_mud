@@ -98,8 +98,7 @@ defmodule Web.Race do
   end
 
   defp parse_stats(params = %{"starting_stats" => stats}) do
-    case Jason
-.decode(stats) do
+    case Jason.decode(stats) do
       {:ok, stats} -> stats |> cast_stats(params)
       _ -> params
     end

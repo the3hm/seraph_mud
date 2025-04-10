@@ -100,11 +100,11 @@ defmodule Game.Format.Table do
 
   defp _limit_visible([], _limit, _), do: []
 
-  defp _limit_visible([char | left], limit, _) when [char] == '{' do
+  defp _limit_visible([char | left], limit, _) when [char] == ~c"{" do
     [char | _limit_visible(left, limit, true)]
   end
 
-  defp _limit_visible([char | left], limit, _) when [char] == '}' do
+  defp _limit_visible([char | left], limit, _) when [char] == ~c"}" do
     [char | _limit_visible(left, limit, false)]
   end
 

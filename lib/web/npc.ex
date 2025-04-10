@@ -157,8 +157,7 @@ defmodule Web.NPC do
   end
 
   defp parse_stats(params = %{"stats" => stats}) do
-    case Jason
-.decode(stats) do
+    case Jason.decode(stats) do
       {:ok, stats} ->
         cast_stats(stats, params)
 
@@ -180,8 +179,7 @@ defmodule Web.NPC do
   end
 
   defp parse_script(params = %{"script" => script}) do
-    case Jason
-.decode(script) do
+    case Jason.decode(script) do
       {:ok, script} ->
         script |> cast_script(params)
 

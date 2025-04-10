@@ -9,7 +9,7 @@ defmodule ExVenture.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: [:yecc, :leex] ++ Mix.compilers(),
       aliases: aliases(),
       deps: deps(),
       releases: releases(),
@@ -84,7 +84,6 @@ defmodule ExVenture.MixProject do
 
       # Internationalization & Formatting
       {:gettext, "~> 0.26.2"},
-      {:ex_cldr, "~> 2.42"},
 
       # Utilities
       {:jason, "~> 1.4"},

@@ -7,6 +7,13 @@ defmodule Grapevine.Ueberauth.Strategy do
 
   alias Grapevine.Ueberauth.Strategy.OAuth
 
+  # Module-level configuration
+  @client_id Application.compile_env(:gossip, :client_id, nil)
+  @client_secret Application.compile_env(:gossip, :client_secret, nil)
+  @site "https://grapevine.haus"
+  @authorize_url "/oauth/authorize"
+  @token_url "/oauth/token"
+
   defmodule OAuth do
     @moduledoc """
     OAuth client used by the Grapevine Ueberauth strategy
@@ -14,22 +21,17 @@ defmodule Grapevine.Ueberauth.Strategy do
 
     use OAuth2.Strategy
 
-    @defaults [
-      strategy: __MODULE__,
-      site: "https://grapevine.haus",
-      authorize_url: "/oauth/authorize",
-      token_url: "/oauth/token"
-    ]
-
     def client(opts \\ []) do
-      # ✅ Compile-time safe configuration access
-      client_id = Application.compile_env(:gossip, :client_id, nil)
-      client_secret = Application.compile_env(:gossip, :client_secret, nil)
-
+      # Use compile-time configuration safely
       opts =
-        @defaults
+        [
+          strategy: __MODULE__,
+          site: @site,
+          authorize_url: @authorize_url,
+          token_url: @token_url
+        ]
         |> Keyword.merge(opts)
-        |> Keyword.merge(client_id: client_id, client_secret: client_secret)
+        |> Keyword.merge(client_id: @client_id, client_secret: @client_secret)
         |> Enum.reject(fn {_k, v} -> is_nil(v) end)
 
       OAuth2.Client.new(opts)
@@ -61,8 +63,6 @@ defmodule Grapevine.Ueberauth.Strategy do
           {:ok, token}
       end
     end
-
-    # Strategy Callbacks
 
     def authorize_url(client, params) do
       OAuth2.Strategy.AuthCode.authorize_url(client, params)

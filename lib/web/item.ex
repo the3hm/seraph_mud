@@ -149,8 +149,7 @@ defmodule Web.Item do
   end
 
   defp parse_stats(params = %{"stats" => stats}) do
-    case Jason
-.decode(stats) do
+    case Jason.decode(stats) do
       {:ok, stats} -> stats |> cast_stats(params)
       _ -> params
     end
@@ -169,8 +168,7 @@ defmodule Web.Item do
   end
 
   defp parse_effects(params = %{"effects" => effects}) do
-    case Jason
-.decode(effects) do
+    case Jason.decode(effects) do
       {:ok, effects} -> effects |> cast_effects(params)
       _ -> params
     end

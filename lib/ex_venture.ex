@@ -41,8 +41,7 @@ defmodule ExVenture do
   Return the Git SHA or version identifier compiled into the app.
   Looks up the value from compile-time configuration.
   """
+  @sha_version Application.compile_env(:ex_venture, :version, "unknown")
   @spec sha_version() :: String.t()
-  def sha_version do
-    Application.compile_env(:ex_venture, :version, "unknown")
-  end
+  def sha_version, do: @sha_version
 end

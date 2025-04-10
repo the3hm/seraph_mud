@@ -337,7 +337,7 @@ defmodule Web.User do
 
     case query |> Repo.one() do
       nil ->
-        Logger.warn("Password reset attempted for #{email}")
+        Logger.warning("Password reset attempted for #{email}")
 
         :ok
 
