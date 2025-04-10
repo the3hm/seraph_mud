@@ -21,7 +21,7 @@ defmodule Data.Zone do
     field(:map_layer_names, :map, default: %{})
     field(:overworld_map, {:array, MapCell})
 
-    field(:exits, {:array, Exit}, virtual: true)
+    field(:exits, {:array, :map}, virtual: true)
 
     has_many(:rooms, Room)
     has_many(:npc_spawners, NPCSpawner)

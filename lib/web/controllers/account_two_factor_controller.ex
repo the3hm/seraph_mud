@@ -1,76 +1,86 @@
 defmodule Web.AccountTwoFactorController do
+  @moduledoc """
+  Handles setup, verification, and management of two-factor authentication (TOTP) for user accounts.
+  """
+
   use Web, :controller
 
   alias Web.User
+  alias Web.Router.Helpers, as: Routes
 
   @failed_attempts_limit 3
 
-  plug(Web.Plug.PublicEnsureUser)
-  plug(:signout_after_failed_attempts when action in [:verify, :verify_token])
-  plug(:ensure_not_verified_yet! when action in [:start, :validate, :qr])
+  plug Web.Plug.PublicEnsureUser
+  plug :signout_after_failed_attempts when action in [:verify, :verify_token]
+  plug :ensure_not_verified_yet! when action in [:start, :validate, :qr]
 
-  def start(conn, _params) do
-    %{current_user: user} = conn.assigns
+  @doc """
+  Starts the two-factor setup process and generates a new TOTP secret.
+  """
+  def start(%{assigns: %{current_user: user}} = conn, _params) do
     user = User.create_totp_secret(user)
-    conn |> render("start.html", user: user)
+    render(conn, "start.html", user: user)
   end
 
-  def validate(conn, %{"user" => %{"token" => token}}) do
-    %{current_user: user} = conn.assigns
+  @doc """
+  Validates a user's TOTP token during setup.
+  """
+  def validate(%{assigns: %{current_user: user}} = conn, %{"user" => %{"token" => token}}) do
+    if User.valid_totp_token?(user, token) do
+      User.totp_token_verified(user)
 
-    case User.valid_totp_token?(user, token) do
-      true ->
-        User.totp_token_verified(user)
-
-        conn
-        |> put_flash(:info, "Your account has Two Factor security enabled!")
-        |> put_session(:is_user_totp_verified, true)
-        |> redirect(to: public_account_path(conn, :show))
-
-      false ->
-        conn
-        |> put_flash(:error, "Token was invalid. Try again.")
-        |> redirect(to: public_account_two_factor_path(conn, :start))
+      conn
+      |> put_flash(:info, "Your account has Two Factor security enabled!")
+      |> put_session(:is_user_totp_verified, true)
+      |> redirect(to: Routes.public_account_path(conn, :show))
+    else
+      conn
+      |> put_flash(:error, "Token was invalid. Try again.")
+      |> redirect(to: Routes.public_account_two_factor_path(conn, :start))
     end
   end
 
+  @doc """
+  Displays the verification form for existing users.
+  """
   def verify(conn, _params) do
-    conn |> render("verify.html")
+    render(conn, "verify.html")
   end
 
-  def verify_token(conn, %{"user" => %{"token" => token}}) do
-    %{current_user: user} = conn.assigns
+  @doc """
+  Attempts to verify a TOTP token at login.
+  """
+  def verify_token(%{assigns: %{current_user: user}} = conn, %{"user" => %{"token" => token}}) do
+    if User.valid_totp_token?(user, token) do
+      conn
+      |> put_session(:is_user_totp_verified, true)
+      |> redirect(to: Routes.public_page_path(conn, :index))
+    else
+      failed_count = get_session(conn, :totp_failed_count) || 0
 
-    case User.valid_totp_token?(user, token) do
-      true ->
-        conn
-        |> put_session(:is_user_totp_verified, true)
-        |> redirect(to: public_page_path(conn, :index))
-
-      false ->
-        failed_count = get_session(conn, :totp_failed_count) || 0
-
-        conn
-        |> put_flash(:error, "Token was invalid. Try again.")
-        |> put_session(:totp_failed_count, failed_count + 1)
-        |> redirect(to: public_account_two_factor_path(conn, :verify))
+      conn
+      |> put_flash(:error, "Token was invalid. Try again.")
+      |> put_session(:totp_failed_count, failed_count + 1)
+      |> redirect(to: Routes.public_account_two_factor_path(conn, :verify))
     end
   end
 
-  def clear(conn, _) do
-    %{current_user: user} = conn.assigns
-
+  @doc """
+  Disables TOTP and clears session verification.
+  """
+  def clear(%{assigns: %{current_user: user}} = conn, _params) do
     User.reset_totp(user)
 
     conn
     |> put_session(:is_user_totp_verified, false)
     |> put_flash(:info, "Second factor disabled")
-    |> redirect(to: public_account_path(conn, :show))
+    |> redirect(to: Routes.public_account_path(conn, :show))
   end
 
-  def qr(conn, _params) do
-    %{current_user: user} = conn.assigns
-
+  @doc """
+  Generates the QR code PNG image for TOTP apps.
+  """
+  def qr(%{assigns: %{current_user: user}} = conn, _params) do
     png = User.generate_qr_png(user)
 
     conn
@@ -79,13 +89,16 @@ defmodule Web.AccountTwoFactorController do
     |> send_resp(200, png)
   end
 
+  @doc """
+  If the user exceeds the maximum failed TOTP attempts, sign them out.
+  """
   def signout_after_failed_attempts(conn, _opts) do
     case get_session(conn, :totp_failed_count) do
       @failed_attempts_limit ->
         conn
         |> clear_session()
         |> put_flash(:error, "You reached max token attempts")
-        |> redirect(to: public_page_path(conn, :index))
+        |> redirect(to: Routes.public_page_path(conn, :index))
         |> halt()
 
       _ ->
@@ -94,20 +107,14 @@ defmodule Web.AccountTwoFactorController do
   end
 
   @doc """
-  Ensure that the two factor process has not completed yet. We should not
-  show the QR code again (or restart the connection) if someone browses there
-  by accident.
+  Prevents restarting or showing the QR setup page if the user is already verified.
   """
-  def ensure_not_verified_yet!(conn, _opts) do
-    %{current_user: user} = conn.assigns
-
+  def ensure_not_verified_yet!(%{assigns: %{current_user: user}} = conn, _opts) do
     case user.totp_verified_at do
-      nil ->
-        conn
-
+      nil -> conn
       _ ->
         conn
-        |> redirect(to: public_page_path(conn, :index))
+        |> redirect(to: Routes.public_page_path(conn, :index))
         |> halt()
     end
   end

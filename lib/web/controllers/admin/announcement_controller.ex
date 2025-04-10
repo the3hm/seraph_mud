@@ -1,10 +1,17 @@
 defmodule Web.Admin.AnnouncementController do
+  @moduledoc """
+  Admin controller for managing in-game announcements.
+  """
+
   use Web.AdminController
 
   alias Web.Announcement
 
-  plug(Web.Plug.FetchPage when action in [:index])
+  plug Web.Plug.FetchPage when action in [:index]
 
+  @doc """
+  Displays a paginated list of announcements.
+  """
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
     %{page: announcements, pagination: pagination} = Announcement.all(page: page, per: per)
@@ -15,6 +22,9 @@ defmodule Web.Admin.AnnouncementController do
     |> render("index.html")
   end
 
+  @doc """
+  Displays a single announcement by ID.
+  """
   def show(conn, %{"id" => id}) do
     announcement = Announcement.get(id)
 
@@ -23,6 +33,9 @@ defmodule Web.Admin.AnnouncementController do
     |> render("show.html")
   end
 
+  @doc """
+  Renders the form to create a new announcement.
+  """
   def new(conn, _params) do
     changeset = Announcement.new()
 
@@ -31,6 +44,9 @@ defmodule Web.Admin.AnnouncementController do
     |> render("new.html")
   end
 
+  @doc """
+  Creates a new announcement.
+  """
   def create(conn, %{"announcement" => params}) do
     case Announcement.create(params) do
       {:ok, announcement} ->
@@ -46,6 +62,9 @@ defmodule Web.Admin.AnnouncementController do
     end
   end
 
+  @doc """
+  Renders the form to edit an existing announcement.
+  """
   def edit(conn, %{"id" => id}) do
     announcement = Announcement.get(id)
     changeset = Announcement.edit(announcement)
@@ -56,6 +75,9 @@ defmodule Web.Admin.AnnouncementController do
     |> render("edit.html")
   end
 
+  @doc """
+  Updates an existing announcement.
+  """
   def update(conn, %{"id" => id, "announcement" => params}) do
     case Announcement.update(id, params) do
       {:ok, announcement} ->
@@ -67,10 +89,7 @@ defmodule Web.Admin.AnnouncementController do
         announcement = Announcement.get(id)
 
         conn
-        |> put_flash(
-          :error,
-          "There was a problem updating #{announcement.title}. Please try again."
-        )
+        |> put_flash(:error, "There was a problem updating #{announcement.title}. Please try again.")
         |> assign(:announcement, announcement)
         |> assign(:changeset, changeset)
         |> render("edit.html")

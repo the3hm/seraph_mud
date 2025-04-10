@@ -1,38 +1,48 @@
 defmodule Web.CharacterController do
+  @moduledoc """
+  Handles character creation and swapping for signed-in users.
+  """
+
   use Web, :controller
 
   alias Game.Config
   alias Web.Character
+  alias Web.Router.Helpers, as: Routes
 
-  plug(Web.Plug.PublicEnsureUser)
+  plug Web.Plug.PublicEnsureUser
 
+  @doc """
+  Renders the new character creation form.
+  """
   def new(conn, _params) do
-    conn
-    |> assign(:changeset, Character.new())
-    |> assign(:names, Config.random_character_names())
-    |> render("new.html")
+    render(conn, "new.html",
+      changeset: Character.new(),
+      names: Config.random_character_names()
+    )
   end
 
-  def create(conn, %{"character" => params}) do
-    %{current_user: user} = conn.assigns
-
+  @doc """
+  Attempts to create a new character for the current user.
+  """
+  def create(%{assigns: %{current_user: user}} = conn, %{"character" => params}) do
     case Character.create(user, params) do
       {:ok, character} ->
         conn
         |> put_session(:current_character_id, character.id)
-        |> redirect(to: public_play_path(conn, :show))
+        |> redirect(to: Routes.public_play_path(conn, :show))
 
       {:error, changeset} ->
-        conn
-        |> assign(:changeset, changeset)
-        |> assign(:names, Config.random_character_names())
-        |> render("new.html")
+        render(conn, "new.html",
+          changeset: changeset,
+          names: Config.random_character_names()
+        )
     end
   end
 
-  def swap(conn, %{"to" => id}) do
-    %{current_user: user} = conn.assigns
-
+  @doc """
+  Swaps the active character session to another owned by the user.
+  """
+  def swap(%{assigns: %{current_user: user}} = conn, %{"to" => id}) do
     case Character.get_character(user, id) do
       {:ok, character} ->
         conn
@@ -51,7 +61,7 @@ defmodule Web.CharacterController do
         redirect(conn, to: uri.path)
 
       _ ->
-        redirect(conn, to: public_page_path(conn, :index))
+        redirect(conn, to: Routes.public_page_path(conn, :index))
     end
   end
 end

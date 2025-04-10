@@ -22,9 +22,7 @@ defmodule Web do
       use Phoenix.Controller, namespace: Web
 
       import Plug.Conn
-      import Web.Router.Helpers
-
-      alias Web.Router.Helper, as: Routes
+      alias Web.Router.Helpers, as: Routes
     end
   end
 
@@ -38,16 +36,20 @@ defmodule Web do
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
+      use PhoenixHTMLHelpers
 
-      import Web.Router.Helpers
+      alias Web.Router.Helpers, as: Routes
       import Web.ErrorHelpers
-      import Web.Gettext
+      use Gettext, backend: Web.Gettext
 
       alias Web.FormView
-      alias Web.Router.Helper, as: Routes
       alias Web.Views.Help
       alias Web.ReactView, as: React
+
+      # Optional: If this is a real module with helpers, give it a unique name
+      alias Web.Router.Helper, as: RouterHelper
     end
   end
 

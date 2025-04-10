@@ -1,31 +1,40 @@
 defmodule Web.SkillController do
+  @moduledoc """
+  Displays a list of skills and individual skill detail pages.
+  """
+
   use Web, :controller
 
   alias Web.Skill
+  alias Web.Router.Helpers, as: Routes
 
-  plug(Web.Plug.FetchPage, [per: 10] when action in [:index])
+  plug Web.Plug.FetchPage, [per: 10] when action in [:index]
 
+  @doc """
+  Lists all enabled skills with pagination.
+  """
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
 
     %{page: skills, pagination: pagination} =
       Skill.all(page: page, per: per, filter: %{enabled: true})
 
-    conn
-    |> assign(:skills, skills)
-    |> assign(:pagination, pagination)
-    |> render(:index)
+    render(conn, :index,
+      skills: skills,
+      pagination: pagination
+    )
   end
 
+  @doc """
+  Displays a single skill page.
+  """
   def show(conn, %{"id" => id}) do
     case Skill.get(id) do
       nil ->
-        conn |> redirect(to: public_page_path(conn, :index))
+        redirect(conn, to: Routes.public_page_path(conn, :index))
 
       skill ->
-        conn
-        |> assign(:skill, skill)
-        |> render(:show)
+        render(conn, :show, skill: skill)
     end
   end
 end

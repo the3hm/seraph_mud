@@ -1,77 +1,80 @@
 defmodule Web.RegistrationController do
+  @moduledoc """
+  Handles user registration, including new account creation and finalizing character setup.
+  """
+
   use Web, :controller
 
   alias Game.Config
   alias Web.User
+  alias Web.Router.Helpers, as: Routes
 
-  plug(Web.Plug.PublicEnsureUser when action in [:finalize, :update])
-  plug(:ensure_registration_enabled?)
+  plug Web.Plug.PublicEnsureUser when action in [:finalize, :update]
+  plug :ensure_registration_enabled?
 
+  @doc """
+  Renders the registration form.
+  """
   def new(conn, _params) do
-    changeset = User.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> assign(:names, Config.random_character_names())
-    |> render("new.html")
+    render(conn, "new.html",
+      changeset: User.new(),
+      names: Config.random_character_names()
+    )
   end
 
+  @doc """
+  Creates a new user account and logs them in.
+  """
   def create(conn, %{"user" => params}) do
     case User.create(params) do
       {:ok, user, _character} ->
         conn
         |> put_session(:user_token, user.token)
-        |> redirect(to: public_play_path(conn, :show))
+        |> redirect(to: Routes.public_play_path(conn, :show))
 
       {:error, changeset} ->
-        conn
-        |> assign(:changeset, changeset)
-        |> assign(:names, Config.random_character_names())
-        |> render("new.html")
+        render(conn, "new.html",
+          changeset: changeset,
+          names: Config.random_character_names()
+        )
     end
   end
 
-  def finalize(conn, _params) do
-    %{current_user: user} = conn.assigns
-
-    with true <- User.finalize_registration?(user) do
-      changeset = User.finalize(user)
-
-      conn
-      |> assign(:changeset, changeset)
-      |> render("finalize.html")
+  @doc """
+  Shows the finalize registration page if required.
+  """
+  def finalize(%{assigns: %{current_user: user}} = conn, _params) do
+    if User.finalize_registration?(user) do
+      render(conn, "finalize.html", changeset: User.finalize(user))
     else
-      _ ->
-        redirect(conn, to: public_page_path(conn, :index))
+      redirect(conn, to: Routes.public_page_path(conn, :index))
     end
   end
 
-  def update(conn, %{"user" => params}) do
-    %{current_user: user} = conn.assigns
+  @doc """
+  Updates the user during finalization.
+  """
+  def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
+    cond do
+      User.finalize_registration?(user) &&
+        match?({:ok, _}, User.finalize_user(user, params)) ->
+        redirect(conn, to: Routes.public_page_path(conn, :index))
 
-    with true <- User.finalize_registration?(user),
-         {:ok, _user} <- User.finalize_user(user, params) do
-      redirect(conn, to: public_page_path(conn, :index))
-    else
-      {:error, changeset} ->
-        conn
-        |> assign(:changeset, changeset)
-        |> render("finalize.html")
+      {:error, changeset} = User.finalize_user(user, params) ->
+        render(conn, "finalize.html", changeset: changeset)
 
-      _ ->
-        redirect(conn, to: public_page_path(conn, :index))
+      true ->
+        redirect(conn, to: Routes.public_page_path(conn, :index))
     end
   end
 
   def ensure_registration_enabled?(conn, _opts) do
-    case Config.grapevine_only_login?() do
-      true ->
-        conn
-        |> redirect(to: public_session_path(conn, :new))
-        |> halt()
-
-      false ->
-        conn
+    if Config.grapevine_only_login?() do
+      conn
+      |> redirect(to: Routes.public_session_path(conn, :new))
+      |> halt()
+    else
+      conn
     end
   end
 end

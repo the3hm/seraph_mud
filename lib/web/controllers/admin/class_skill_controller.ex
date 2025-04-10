@@ -1,9 +1,16 @@
 defmodule Web.Admin.ClassSkillController do
+  @moduledoc """
+  Admin controller for assigning and removing skills from character classes.
+  """
+
   use Web.AdminController
 
   alias Web.Class
   alias Web.Skill
 
+  @doc """
+  Displays a form to assign a new skill to a class.
+  """
   def new(conn, %{"class_id" => class_id}) do
     class = Class.get(class_id)
     changeset = Class.new_class_skill(class)
@@ -16,13 +23,16 @@ defmodule Web.Admin.ClassSkillController do
     |> render("new.html")
   end
 
+  @doc """
+  Assigns a selected skill to a class.
+  """
   def create(conn, %{"class_id" => class_id, "class_skill" => %{"skill_id" => skill_id}}) do
     class = Class.get(class_id)
 
     case Class.add_skill(class, skill_id) do
       {:ok, _class_skill} ->
         conn
-        |> put_flash(:info, "Skill addeded to #{class.name}")
+        |> put_flash(:info, "Skill added to #{class.name}")
         |> redirect(to: class_path(conn, :show, class.id))
 
       {:error, changeset} ->
@@ -37,6 +47,9 @@ defmodule Web.Admin.ClassSkillController do
     end
   end
 
+  @doc """
+  Removes a skill from a class.
+  """
   def delete(conn, %{"id" => id}) do
     case Class.remove_skill(id) do
       {:ok, class_skill} ->

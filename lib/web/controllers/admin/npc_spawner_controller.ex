@@ -1,41 +1,53 @@
 defmodule Web.Admin.NPCSpawnerController do
+  @moduledoc """
+  Admin controller for managing NPC spawners within zones.
+  """
+
   use Web.AdminController
 
   alias Web.NPC
   alias Web.Zone
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  Show a specific NPC spawner.
+  """
   def show(conn, %{"id" => id}) do
     npc_spawner = NPC.get_spawner(id)
     npc = NPC.get(npc_spawner.npc_id)
 
-    conn
-    |> assign(:npc_spawner, npc_spawner)
-    |> assign(:npc, npc)
-    |> render("show.html")
+    render(conn, "show.html", npc_spawner: npc_spawner, npc: npc)
   end
 
+  @doc """
+  Render the form for creating a new spawner with a preselected zone.
+  """
   def new(conn, %{"npc_id" => npc_id, "npc_spawner" => %{"zone_id" => zone_id}}) do
     zone = Zone.get(zone_id)
     npc = NPC.get(npc_id)
-    changeset = NPC.new_spawner(npc)
 
-    conn
-    |> assign(:npc, npc)
-    |> assign(:changeset, changeset)
-    |> assign(:zone, zone)
-    |> render("new.html")
+    render(conn, "new.html",
+      npc: npc,
+      zone: zone,
+      changeset: NPC.new_spawner(npc)
+    )
   end
 
+  @doc """
+  Render the form for creating a new spawner without a zone selected.
+  """
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-    changeset = NPC.new_spawner(npc)
 
-    conn
-    |> assign(:npc, npc)
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, "new.html",
+      npc: npc,
+      changeset: NPC.new_spawner(npc)
+    )
   end
 
+  @doc """
+  Create a new NPC spawner for a given NPC.
+  """
   def create(conn, %{"npc_id" => npc_id, "npc_spawner" => params}) do
     npc = NPC.get(npc_id)
 
@@ -43,7 +55,7 @@ defmodule Web.Admin.NPCSpawnerController do
       {:ok, npc_spawner} ->
         conn
         |> put_flash(:info, "Spawner created!")
-        |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_spawner.npc_id))
 
       {:error, changeset} ->
         conn
@@ -53,22 +65,27 @@ defmodule Web.Admin.NPCSpawnerController do
     end
   end
 
+  @doc """
+  Edit an existing NPC spawner.
+  """
   def edit(conn, %{"id" => id}) do
     npc_spawner = NPC.get_spawner(id)
-    changeset = NPC.edit_spawner(npc_spawner)
 
-    conn
-    |> assign(:npc_spawner, npc_spawner)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, "edit.html",
+      npc_spawner: npc_spawner,
+      changeset: NPC.edit_spawner(npc_spawner)
+    )
   end
 
+  @doc """
+  Update an existing NPC spawner.
+  """
   def update(conn, %{"id" => id, "npc_spawner" => params}) do
     case NPC.update_spawner(id, params) do
       {:ok, npc_spawner} ->
         conn
         |> put_flash(:info, "Spawner updated!")
-        |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_spawner.npc_id))
 
       {:error, changeset} ->
         npc_spawner = NPC.get_spawner(id)
@@ -81,17 +98,20 @@ defmodule Web.Admin.NPCSpawnerController do
     end
   end
 
+  @doc """
+  Delete an NPC spawner.
+  """
   def delete(conn, %{"id" => id, "npc_id" => npc_id}) do
     case NPC.delete_spawner(id) do
-      {:ok, _npc_spanwer} ->
+      {:ok, _spawner} ->
         conn
         |> put_flash(:info, "NPC spawner deleted!")
-        |> redirect(to: npc_path(conn, :show, npc_id))
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_id))
 
-      {:error, _changeset} ->
+      {:error, _reason} ->
         conn
         |> put_flash(:error, "There was an issue deleting the spawner. Please try again.")
-        |> redirect(to: npc_path(conn, :show, npc_id))
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_id))
     end
   end
 end

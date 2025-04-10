@@ -1,72 +1,87 @@
 defmodule Web.Admin.ItemAspectController do
+  @moduledoc """
+  Admin controller for managing item aspects.
+
+  Provides actions to list, view, create, edit, and update aspects that can be attached to items.
+  """
+
   use Web.AdminController
 
   alias Web.ItemAspect
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  List all item aspects.
+  """
   def index(conn, _params) do
-    item_aspects = ItemAspect.all()
-
-    conn
-    |> assign(:item_aspects, item_aspects)
-    |> render("index.html")
+    render(conn, "index.html", item_aspects: ItemAspect.all())
   end
 
+  @doc """
+  Show a single item aspect.
+  """
   def show(conn, %{"id" => id}) do
     item_aspect = ItemAspect.get(id)
 
-    conn
-    |> assign(:item_aspect, item_aspect)
-    |> render("show.html")
+    render(conn, "show.html", item_aspect: item_aspect)
   end
 
+  @doc """
+  Render form for creating a new item aspect.
+  """
   def new(conn, _params) do
-    changeset = ItemAspect.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, "new.html", changeset: ItemAspect.new())
   end
 
+  @doc """
+  Create a new item aspect.
+  """
   def create(conn, %{"item_aspect" => params}) do
     case ItemAspect.create(params) do
       {:ok, item_aspect} ->
         conn
         |> put_flash(:info, "Created #{item_aspect.name}!")
-        |> redirect(to: item_aspect_path(conn, :show, item_aspect.id))
+        |> redirect(to: Routes.item_aspect_path(conn, :show, item_aspect.id))
 
       {:error, changeset} ->
         conn
         |> put_flash(:error, "There was an issue creating the item aspect. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        |> render("new.html", changeset: changeset)
     end
   end
 
+  @doc """
+  Render form for editing an item aspect.
+  """
   def edit(conn, %{"id" => id}) do
     item_aspect = ItemAspect.get(id)
     changeset = ItemAspect.edit(item_aspect)
 
-    conn
-    |> assign(:item_aspect, item_aspect)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, "edit.html",
+      item_aspect: item_aspect,
+      changeset: changeset
+    )
   end
 
+  @doc """
+  Update an existing item aspect.
+  """
   def update(conn, %{"id" => id, "item_aspect" => params}) do
     case ItemAspect.update(id, params) do
       {:ok, item_aspect} ->
         conn
         |> put_flash(:info, "#{item_aspect.name} updated!")
-        |> redirect(to: item_aspect_path(conn, :show, item_aspect.id))
+        |> redirect(to: Routes.item_aspect_path(conn, :show, item_aspect.id))
 
       {:error, changeset} ->
         item_aspect = ItemAspect.get(id)
 
         conn
         |> put_flash(:error, "There was an issue updating #{item_aspect.name}. Please try again.")
-        |> assign(:item_aspect, item_aspect)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render("edit.html",
+          item_aspect: item_aspect,
+          changeset: changeset
+        )
     end
   end
 end

@@ -1,10 +1,17 @@
 defmodule Web.Admin.ChannelController do
-  use Web.AdminController
+  @moduledoc """
+  Admin controller for managing communication channels in the game.
+  """
 
-  plug(:ensure_admin!)
+  use Web.AdminController
 
   alias Web.Channel
 
+  plug :ensure_admin!
+
+  @doc """
+  Lists all channels.
+  """
   def index(conn, _params) do
     channels = Channel.all()
 
@@ -13,6 +20,9 @@ defmodule Web.Admin.ChannelController do
     |> render("index.html")
   end
 
+  @doc """
+  Shows details of a single channel.
+  """
   def show(conn, %{"id" => id}) do
     channel = Channel.get(id)
 
@@ -21,6 +31,9 @@ defmodule Web.Admin.ChannelController do
     |> render("show.html")
   end
 
+  @doc """
+  Displays a form for creating a new channel.
+  """
   def new(conn, _params) do
     changeset = Channel.new()
 
@@ -29,6 +42,9 @@ defmodule Web.Admin.ChannelController do
     |> render("new.html")
   end
 
+  @doc """
+  Handles channel creation.
+  """
   def create(conn, %{"channel" => params}) do
     case Channel.create(params) do
       {:ok, channel} ->
@@ -44,6 +60,9 @@ defmodule Web.Admin.ChannelController do
     end
   end
 
+  @doc """
+  Displays the edit form for an existing channel.
+  """
   def edit(conn, %{"id" => id}) do
     channel = Channel.get(id)
     changeset = Channel.edit(channel)
@@ -54,6 +73,9 @@ defmodule Web.Admin.ChannelController do
     |> render("edit.html")
   end
 
+  @doc """
+  Handles channel updates.
+  """
   def update(conn, %{"id" => id, "channel" => params}) do
     channel = Channel.get(id)
 

@@ -1,10 +1,17 @@
 defmodule Web.Admin.ClassController do
+  @moduledoc """
+  Admin controller for managing character classes.
+  """
+
   use Web.AdminController
 
   alias Web.Class
 
-  plug(Web.Plug.FetchPage when action in [:index])
+  plug Web.Plug.FetchPage when action in [:index]
 
+  @doc """
+  Lists all classes with pagination.
+  """
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
     %{page: classes, pagination: pagination} = Class.all(page: page, per: per)
@@ -15,6 +22,9 @@ defmodule Web.Admin.ClassController do
     |> render("index.html")
   end
 
+  @doc """
+  Displays details of a specific class.
+  """
   def show(conn, %{"id" => id}) do
     class = Class.get(id)
 
@@ -23,6 +33,9 @@ defmodule Web.Admin.ClassController do
     |> render("show.html")
   end
 
+  @doc """
+  Shows the form to create a new class.
+  """
   def new(conn, _params) do
     changeset = Class.new()
 
@@ -31,6 +44,9 @@ defmodule Web.Admin.ClassController do
     |> render("new.html")
   end
 
+  @doc """
+  Handles the creation of a new class.
+  """
   def create(conn, %{"class" => params}) do
     case Class.create(params) do
       {:ok, class} ->
@@ -46,6 +62,9 @@ defmodule Web.Admin.ClassController do
     end
   end
 
+  @doc """
+  Shows the form to edit an existing class.
+  """
   def edit(conn, %{"id" => id}) do
     class = Class.get(id)
     changeset = Class.edit(class)
@@ -56,6 +75,9 @@ defmodule Web.Admin.ClassController do
     |> render("edit.html")
   end
 
+  @doc """
+  Updates an existing class.
+  """
   def update(conn, %{"id" => id, "class" => params}) do
     case Class.update(id, params) do
       {:ok, class} ->

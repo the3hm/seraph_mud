@@ -1,10 +1,19 @@
 defmodule Web.Admin.HelpTopicController do
+  @moduledoc """
+  Admin controller for managing Help Topics.
+
+  Provides interfaces to list, create, view, edit, and update help topics that appear in the in-game help system.
+  """
+
   use Web.AdminController
 
   alias Web.HelpTopic
 
   plug(Web.Plug.FetchPage when action in [:index])
 
+  @doc """
+  List all help topics with pagination.
+  """
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
     %{page: help_topics, pagination: pagination} = HelpTopic.all(page: page, per: per)
@@ -15,6 +24,9 @@ defmodule Web.Admin.HelpTopicController do
     |> render("index.html")
   end
 
+  @doc """
+  Show a specific help topic by ID.
+  """
   def show(conn, %{"id" => id}) do
     help_topic = HelpTopic.get(id)
 
@@ -23,6 +35,9 @@ defmodule Web.Admin.HelpTopicController do
     |> render("show.html")
   end
 
+  @doc """
+  Render form to create a new help topic.
+  """
   def new(conn, _params) do
     changeset = HelpTopic.new()
 
@@ -31,6 +46,9 @@ defmodule Web.Admin.HelpTopicController do
     |> render("new.html")
   end
 
+  @doc """
+  Handle creation of a new help topic.
+  """
   def create(conn, %{"help_topic" => params}) do
     case HelpTopic.create(params) do
       {:ok, help_topic} ->
@@ -46,6 +64,9 @@ defmodule Web.Admin.HelpTopicController do
     end
   end
 
+  @doc """
+  Render form to edit an existing help topic.
+  """
   def edit(conn, %{"id" => id}) do
     help_topic = HelpTopic.get(id)
     changeset = HelpTopic.edit(help_topic)
@@ -56,6 +77,9 @@ defmodule Web.Admin.HelpTopicController do
     |> render("edit.html")
   end
 
+  @doc """
+  Handle updating of an existing help topic.
+  """
   def update(conn, %{"id" => id, "help_topic" => params}) do
     case HelpTopic.update(id, params) do
       {:ok, help_topic} ->

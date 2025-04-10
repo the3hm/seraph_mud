@@ -1,14 +1,23 @@
 defmodule Web.Admin.BugController do
+  @moduledoc """
+  Admin controller for viewing and managing player-reported bugs.
+  """
+
   use Web.AdminController
 
   alias Web.Bug
 
-  plug(Web.Plug.FetchPage when action in [:index])
+  plug Web.Plug.FetchPage when action in [:index]
 
+  @doc """
+  Lists all reported bugs with optional filters.
+  """
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "bug", %{})
-    %{page: bugs, pagination: pagination} = Bug.all(filter: filter, page: page, per: per)
+
+    %{page: bugs, pagination: pagination} =
+      Bug.all(filter: filter, page: page, per: per)
 
     conn
     |> assign(:bugs, bugs)
@@ -17,6 +26,9 @@ defmodule Web.Admin.BugController do
     |> render("index.html")
   end
 
+  @doc """
+  Shows details for a single bug report.
+  """
   def show(conn, %{"id" => id}) do
     bug = Bug.get(id)
 
@@ -25,6 +37,9 @@ defmodule Web.Admin.BugController do
     |> render("show.html")
   end
 
+  @doc """
+  Marks a bug as completed.
+  """
   def complete(conn, %{"bug_id" => id}) do
     case Bug.complete(id) do
       {:ok, bug} ->

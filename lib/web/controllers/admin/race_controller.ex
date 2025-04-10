@@ -1,72 +1,75 @@
 defmodule Web.Admin.RaceController do
+  @moduledoc """
+  Admin controller for managing races in the game.
+  """
+
   use Web.AdminController
 
   alias Web.Race
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  Lists all available races.
+  """
   def index(conn, _params) do
-    races = Race.all()
-
-    conn
-    |> assign(:races, races)
-    |> render("index.html")
+    render(conn, "index.html", races: Race.all())
   end
 
+  @doc """
+  Shows a single race with details and options.
+  """
   def show(conn, %{"id" => id}) do
-    race = Race.get(id)
-
-    conn
-    |> assign(:race, race)
-    |> render("show.html")
+    render(conn, "show.html", race: Race.get(id))
   end
 
+  @doc """
+  Renders the new race form.
+  """
   def new(conn, _params) do
-    changeset = Race.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, "new.html", changeset: Race.new())
   end
 
+  @doc """
+  Creates a new race entry.
+  """
   def create(conn, %{"race" => params}) do
     case Race.create(params) do
       {:ok, race} ->
         conn
         |> put_flash(:info, "#{race.name} created!")
-        |> redirect(to: race_path(conn, :show, race.id))
+        |> redirect(to: Routes.admin_race_path(conn, :show, race.id))
 
       {:error, changeset} ->
         conn
         |> put_flash(:error, "There was a problem creating the race. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        |> render("new.html", changeset: changeset)
     end
   end
 
+  @doc """
+  Renders the edit form for a race.
+  """
   def edit(conn, %{"id" => id}) do
     race = Race.get(id)
-    changeset = Race.edit(race)
-
-    conn
-    |> assign(:race, race)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, "edit.html", race: race, changeset: Race.edit(race))
   end
 
+  @doc """
+  Updates an existing race with new data.
+  """
   def update(conn, %{"id" => id, "race" => params}) do
     case Race.update(id, params) do
       {:ok, race} ->
         conn
         |> put_flash(:info, "#{race.name} updated!")
-        |> redirect(to: race_path(conn, :show, race.id))
+        |> redirect(to: Routes.admin_race_path(conn, :show, race.id))
 
       {:error, changeset} ->
         race = Race.get(id)
 
         conn
         |> put_flash(:error, "There was an issue updating #{race.name}. Please try again.")
-        |> assign(:race, race)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render("edit.html", race: race, changeset: changeset)
     end
   end
 end

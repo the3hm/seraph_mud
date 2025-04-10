@@ -42,6 +42,10 @@ defmodule ExVenture.MixProject do
       {:plug_cowboy, "~> 2.7"},
       {:ranch, "~> 2.2"},
       {:pid_file, "~> 0.2.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
+
+      # Email
+      {:bamboo, "~> 2.2"},
 
       # Database & Persistence
       {:ecto_sql, "~> 3.12"},

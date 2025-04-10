@@ -1,58 +1,56 @@
 defmodule Web.AnnouncementController do
+  @moduledoc """
+  Public-facing controller for viewing announcements.
+  """
+
   use Web, :controller
 
   alias Web.Announcement
+  alias Web.Router.Helpers, as: Routes
 
   plug(:fetch_announcement when action in [:show])
   plug(:check_published when action in [:show])
 
+  @doc """
+  Renders the announcement feed in XML format.
+  """
   def feed(conn, _params) do
-    render(conn, "feed.xml", announcements: Announcement.recent(sticky: false))
+    announcements = Announcement.recent(sticky: false)
+    render(conn, "feed.xml", announcements: announcements)
   end
 
+  @doc """
+  Shows a single announcement.
+  """
   def show(conn, _params) do
-    conn |> render("show.html")
+    render(conn, "show.html")
   end
 
-  defp fetch_announcement(conn, _opts) do
-    case Announcement.get_by_uuid(conn.params["id"]) do
-      nil ->
-        conn |> redirect(to: public_page_path(conn, :index)) |> halt()
-
-      announcement ->
-        conn |> assign(:announcement, announcement)
+  def fetch_announcement(conn, _opts) do
+    with %{"id" => uuid} <- conn.params,
+         %{} = announcement <- Announcement.get_by_uuid(uuid) do
+      assign(conn, :announcement, announcement)
+    else
+      _ -> redirect_home(conn)
     end
   end
 
-  defp check_published(conn, _opts) do
-    %{announcement: announcement} = conn.assigns
+  def check_published(%{assigns: %{announcement: %{is_published: true}}} = conn, _opts), do: conn
+  def check_published(conn, _opts), do: maybe_redirect_home(conn)
 
-    case announcement.is_published do
-      true ->
-        conn
+  defp maybe_redirect_home(conn) do
+    user = conn.assigns[:user]
 
-      false ->
-        maybe_redirect_home(conn)
-    end
-  end
-
-  def maybe_redirect_home(conn) do
-    case conn.assigns do
-      %{user: user} ->
-        case "admin" in user.flags do
-          true ->
-            conn
-
-          false ->
-            conn |> redirect_home()
-        end
-
-      _ ->
-        conn |> redirect_home()
+    if user && "admin" in user.flags do
+      conn
+    else
+      redirect_home(conn)
     end
   end
 
   defp redirect_home(conn) do
-    conn |> redirect(to: public_page_path(conn, :index)) |> halt()
+    conn
+    |> redirect(to: Routes.public_page_path(conn, :index))
+    |> halt()
   end
 end

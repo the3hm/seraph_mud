@@ -1,18 +1,29 @@
 defmodule Web.Admin.NPCSkillController do
+  @moduledoc """
+  Admin controller for assigning and removing trainable skills to NPCs.
+  """
+
   use Web.AdminController
 
-  alias Web.Skill
   alias Web.NPC
+  alias Web.Skill
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  Renders a form to add a trainable skill to an NPC.
+  """
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
 
-    conn
-    |> assign(:skills, Skill.all())
-    |> assign(:npc, npc)
-    |> render("new.html")
+    render(conn, "new.html",
+      npc: npc,
+      skills: Skill.all()
+    )
   end
 
+  @doc """
+  Creates a trainable skill entry for the given NPC.
+  """
   def create(conn, %{"npc_id" => npc_id, "skill" => %{"id" => skill_id}}) do
     npc = NPC.get(npc_id)
 
@@ -20,31 +31,41 @@ defmodule Web.Admin.NPCSkillController do
       {:ok, npc} ->
         conn
         |> put_flash(:info, "Skill added to #{npc.name}!")
-        |> redirect(to: npc_path(conn, :show, npc.id))
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc.id))
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "There was a problem creating the skill. Please try again.")
-        |> assign(:skills, Skill.all())
+        |> put_flash(:error, "There was a problem adding the skill. Please try again.")
         |> assign(:npc, npc)
+        |> assign(:skills, Skill.all())
         |> render("new.html")
     end
   end
 
+  @doc """
+  Removes a trainable skill from the given NPC.
+  """
   def delete(conn, %{"npc_id" => npc_id, "id" => skill_id}) do
     npc = NPC.get(npc_id)
-    skill_id = String.to_integer(skill_id)
 
-    case NPC.remove_trainable_skill(npc, skill_id) do
-      {:ok, npc} ->
-        conn
-        |> put_flash(:info, "Skill removed!")
-        |> redirect(to: npc_path(conn, :show, npc.id))
+    case Integer.parse(skill_id) do
+      {skill_id_int, _} ->
+        case NPC.remove_trainable_skill(npc, skill_id_int) do
+          {:ok, npc} ->
+            conn
+            |> put_flash(:info, "Skill removed!")
+            |> redirect(to: Routes.admin_npc_path(conn, :show, npc.id))
 
-      {:error, _changeset} ->
+          {:error, _changeset} ->
+            conn
+            |> put_flash(:error, "There was a problem removing the skill. Please try again.")
+            |> redirect(to: Routes.admin_npc_path(conn, :show, npc.id))
+        end
+
+      :error ->
         conn
-        |> put_flash(:error, "There was a problem removing the skill. Please try again.")
-        |> redirect(to: npc_path(conn, :show, npc.id))
+        |> put_flash(:error, "Invalid skill ID.")
+        |> redirect(to: Routes.admin_npc_path(conn, :show, npc.id))
     end
   end
 end

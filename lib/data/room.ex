@@ -55,7 +55,7 @@ defmodule Data.Room do
     field(:ecology, :string)
     field(:notes, :string)
 
-    field(:exits, {:array, Exit}, virtual: true)
+    field(:exits, {:array, :map}, virtual: true)
 
     has_many(:npc_spawners, Data.NPCSpawner)
     has_many(:room_items, Data.RoomItem)

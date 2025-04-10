@@ -1,59 +1,69 @@
 defmodule Web.RegistrationResetController do
+  @moduledoc """
+  Handles password reset via email and reset tokens.
+  """
+
   use Web, :controller
 
   alias Game.Config
   alias Web.User
+  alias Web.Router.Helpers, as: Routes
 
-  plug(:ensure_registration_enabled?)
+  plug :ensure_registration_enabled?
 
+  @doc """
+  Renders the password reset request form.
+  """
   def new(conn, _params) do
-    changeset = User.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, "new.html", changeset: User.new())
   end
 
+  @doc """
+  Starts the password reset process.
+  """
   def create(conn, %{"user" => %{"email" => email}}) do
     User.start_password_reset(email)
 
     conn
     |> put_flash(:info, "Password reset started!")
-    |> redirect(to: public_session_path(conn, :new))
+    |> redirect(to: Routes.public_session_path(conn, :new))
   end
 
+  @doc """
+  Renders the form to enter a new password using a reset token.
+  """
   def edit(conn, %{"token" => token}) do
-    changeset = User.new()
-
-    conn
-    |> assign(:token, token)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, "edit.html",
+      token: token,
+      changeset: User.new()
+    )
   end
 
+  @doc """
+  Applies the password reset if the token and input are valid.
+  """
   def update(conn, %{"token" => token, "user" => params}) do
     case User.reset_password(token, params) do
-      :error ->
-        conn
-        |> put_flash(:info, "There was an issue resetting.")
-        |> redirect(to: public_session_path(conn, :new))
-
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Password reset!")
-        |> redirect(to: public_session_path(conn, :new))
+        |> redirect(to: Routes.public_session_path(conn, :new))
+
+      :error ->
+        conn
+        |> put_flash(:info, "There was an issue resetting.")
+        |> redirect(to: Routes.public_session_path(conn, :new))
     end
   end
 
+  @doc false
   def ensure_registration_enabled?(conn, _opts) do
-    case Config.grapevine_only_login?() do
-      true ->
-        conn
-        |> redirect(to: public_session_path(conn, :new))
-        |> halt()
-
-      false ->
-        conn
+    if Config.grapevine_only_login?() do
+      conn
+      |> redirect(to: Routes.public_session_path(conn, :new))
+      |> halt()
+    else
+      conn
     end
   end
 end

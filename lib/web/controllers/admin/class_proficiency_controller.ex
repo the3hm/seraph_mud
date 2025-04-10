@@ -1,9 +1,16 @@
 defmodule Web.Admin.ClassProficiencyController do
+  @moduledoc """
+  Admin controller for managing proficiencies associated with a character class.
+  """
+
   use Web.AdminController
 
   alias Web.Class
   alias Web.Proficiency
 
+  @doc """
+  Displays a form to assign a new proficiency to a class.
+  """
   def new(conn, %{"class_id" => class_id}) do
     class = Class.get(class_id)
     changeset = Class.new_class_proficiency(class)
@@ -16,13 +23,16 @@ defmodule Web.Admin.ClassProficiencyController do
     |> render("new.html")
   end
 
+  @doc """
+  Adds a proficiency to the class.
+  """
   def create(conn, %{"class_id" => class_id, "class_proficiency" => params}) do
     class = Class.get(class_id)
 
     case Class.add_proficiency(class, params) do
       {:ok, _class_proficiency} ->
         conn
-        |> put_flash(:info, "Proficiency addeded to #{class.name}")
+        |> put_flash(:info, "Proficiency added to #{class.name}")
         |> redirect(to: class_path(conn, :show, class.id))
 
       {:error, changeset} ->
@@ -37,6 +47,9 @@ defmodule Web.Admin.ClassProficiencyController do
     end
   end
 
+  @doc """
+  Removes a proficiency from a class.
+  """
   def delete(conn, %{"id" => id}) do
     case Class.remove_proficiency(id) do
       {:ok, class_proficiency} ->

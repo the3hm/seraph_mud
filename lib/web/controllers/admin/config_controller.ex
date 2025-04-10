@@ -1,14 +1,24 @@
 defmodule Web.Admin.ConfigController do
+  @moduledoc """
+  Admin controller for managing global game configuration settings.
+  """
+
   use Web.AdminController
 
-  plug(:ensure_admin!)
+  plug :ensure_admin!
 
   alias Web.Config
 
+  @doc """
+  Render the index page for config settings.
+  """
   def index(conn, _params) do
-    conn |> render("index.html")
+    render(conn, "index.html")
   end
 
+  @doc """
+  Render the edit form for an existing config or show the creation form for a new config key.
+  """
   def edit(conn, %{"id" => name}) do
     case Config.get(name) do
       nil ->
@@ -29,6 +39,9 @@ defmodule Web.Admin.ConfigController do
     end
   end
 
+  @doc """
+  Handle updating of an existing config entry.
+  """
   def update(conn, %{"id" => name, "config" => %{"value" => value}}) do
     case Config.update(name, value) do
       {:ok, _config} ->

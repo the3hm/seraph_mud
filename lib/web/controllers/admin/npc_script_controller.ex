@@ -1,32 +1,42 @@
 defmodule Web.Admin.NPCScriptController do
+  @moduledoc """
+  Admin controller for managing NPC scripts.
+  Allows viewing and editing of NPC scripts.
+  """
+
   use Web.AdminController
 
   alias Web.NPC
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  Shows the script associated with the given NPC.
+  """
   def show(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
 
-    conn
-    |> assign(:npc, npc)
-    |> render("show.html")
+    render(conn, "show.html", npc: npc)
   end
 
+  @doc """
+  Renders the form to edit the script of the given NPC.
+  """
   def edit(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
     changeset = NPC.edit(npc)
 
-    conn
-    |> assign(:npc, npc)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, "edit.html", npc: npc, changeset: changeset)
   end
 
+  @doc """
+  Updates the script of the NPC.
+  """
   def update(conn, %{"npc_id" => id, "npc" => params}) do
     case NPC.update(id, params) do
       {:ok, npc} ->
         conn
         |> put_flash(:info, "Updated #{npc.name}!")
-        |> redirect(to: npc_script_path(conn, :show, npc.id))
+        |> redirect(to: Routes.admin_npc_script_path(conn, :show, npc.id))
 
       {:error, changeset} ->
         npc = NPC.get(id)

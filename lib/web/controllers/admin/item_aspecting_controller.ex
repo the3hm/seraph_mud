@@ -1,22 +1,33 @@
 defmodule Web.Admin.ItemAspectingController do
+  @moduledoc """
+  Admin controller for managing aspects attached to items.
+  Handles attaching and removing item aspects.
+  """
+
   use Web.AdminController
 
   alias Web.Item
   alias Web.ItemAspect
   alias Web.ItemAspecting
+  alias Web.Router.Helpers, as: Routes
 
+  @doc """
+  Render form for assigning a new aspect to an item.
+  """
   def new(conn, %{"item_id" => item_id}) do
     item = Item.get(item_id)
-    item_aspects = ItemAspect.all()
     changeset = ItemAspecting.new(item)
 
-    conn
-    |> assign(:item, item)
-    |> assign(:item_aspects, item_aspects)
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, "new.html",
+      item: item,
+      item_aspects: ItemAspect.all(),
+      changeset: changeset
+    )
   end
 
+  @doc """
+  Attach an aspect to an item.
+  """
   def create(conn, %{"item_id" => item_id, "item_aspecting" => params}) do
     item = Item.get(item_id)
 
@@ -24,39 +35,34 @@ defmodule Web.Admin.ItemAspectingController do
       {:ok, item_aspecting} ->
         conn
         |> put_flash(:info, "Added the aspect to #{item.name}!")
-        |> redirect(to: item_path(conn, :show, item_aspecting.item_id))
+        |> redirect(to: Routes.item_path(conn, :show, item_aspecting.item_id))
 
       {:error, changeset} ->
-        item_aspects = ItemAspect.all()
-
-        conn
-        |> put_flash(
-          :error,
-          "There was an issue adding the item aspect to #{item.name}. Please try again."
+        render(conn, "new.html",
+          item: item,
+          item_aspects: ItemAspect.all(),
+          changeset: changeset,
+          error: "There was an issue adding the aspect to #{item.name}. Please try again."
         )
-        |> assign(:item, item)
-        |> assign(:item_aspects, item_aspects)
-        |> assign(:changeset, changeset)
-        |> render("new.html")
     end
   end
 
+  @doc """
+  Remove an attached aspect from an item.
+  """
   def delete(conn, %{"id" => id}) do
     item_aspect = ItemAspecting.get(id)
 
     case ItemAspecting.delete(item_aspect) do
       {:ok, _} ->
         conn
-        |> put_flash(:info, "Aspect removed from the item")
-        |> redirect(to: item_path(conn, :show, item_aspect.item_id))
+        |> put_flash(:info, "Aspect removed from the item.")
+        |> redirect(to: Routes.item_path(conn, :show, item_aspect.item_id))
 
       _ ->
         conn
-        |> put_flash(
-          :info,
-          "There was an issue removing the aspect from the item. Please try again."
-        )
-        |> redirect(to: item_path(conn, :show, item_aspect.item_id))
+        |> put_flash(:error, "There was an issue removing the aspect. Please try again.")
+        |> redirect(to: Routes.item_path(conn, :show, item_aspect.item_id))
     end
   end
 end

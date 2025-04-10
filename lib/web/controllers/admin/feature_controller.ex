@@ -1,10 +1,20 @@
 defmodule Web.Admin.FeatureController do
-  use Web.AdminController
+  @moduledoc """
+  Admin controller for managing room features.
 
-  plug(Web.Plug.FetchPage when action in [:index])
+  Allows administrators to list, create, edit, view, and delete persistent features
+  that can be applied to rooms or zones.
+  """
+
+  use Web.AdminController
 
   alias Web.Feature
 
+  plug(Web.Plug.FetchPage when action in [:index])
+
+  @doc """
+  Lists all features with optional filtering.
+  """
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "feature", %{})
@@ -17,6 +27,9 @@ defmodule Web.Admin.FeatureController do
     |> render("index.html")
   end
 
+  @doc """
+  Shows a single feature.
+  """
   def show(conn, %{"id" => id}) do
     feature = Feature.get(id)
 
@@ -25,6 +38,9 @@ defmodule Web.Admin.FeatureController do
     |> render("show.html")
   end
 
+  @doc """
+  Renders a new feature form.
+  """
   def new(conn, _params) do
     changeset = Feature.new()
 
@@ -33,6 +49,9 @@ defmodule Web.Admin.FeatureController do
     |> render("new.html")
   end
 
+  @doc """
+  Creates a new feature.
+  """
   def create(conn, %{"feature" => params}) do
     case Feature.create(params) do
       {:ok, feature} ->
@@ -48,6 +67,9 @@ defmodule Web.Admin.FeatureController do
     end
   end
 
+  @doc """
+  Renders the form to edit an existing feature.
+  """
   def edit(conn, %{"id" => id}) do
     feature = Feature.get(id)
     changeset = Feature.edit(feature)
@@ -58,6 +80,9 @@ defmodule Web.Admin.FeatureController do
     |> render("edit.html")
   end
 
+  @doc """
+  Updates a feature.
+  """
   def update(conn, %{"id" => id, "feature" => params}) do
     case Feature.update(id, params) do
       {:ok, feature} ->
@@ -76,6 +101,9 @@ defmodule Web.Admin.FeatureController do
     end
   end
 
+  @doc """
+  Deletes a feature.
+  """
   def delete(conn, %{"id" => id}) do
     case Feature.delete(id) do
       {:ok, feature} ->
