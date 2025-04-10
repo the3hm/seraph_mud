@@ -5,14 +5,14 @@ defmodule Game.Currency do
   Gives `@currency` and `currency/0`
   """
 
-  @currency Application.get_env(:ex_venture, :game)[:currency]
+  @currency Application.compile_env(:ex_venture, :game, [])[:currency]
 
   @doc """
   Sets up `@currency` and imports `currency/0`
   """
   defmacro __using__(_opts) do
     quote do
-      @currency Application.get_env(:ex_venture, :game)[:currency]
+      @currency Application.compile_env(:ex_venture, :game, [])[:currency]
 
       import Game.Currency
     end

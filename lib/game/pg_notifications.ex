@@ -38,7 +38,6 @@ defmodule Game.PGNotifications do
   def handle_info({:notification, _pid, _ref, "row_changed", payload}, state) do
     with {:ok, data} <- Jason.decode(payload) do
       update_local_cache(data)
-
       {:noreply, state}
     else
       error ->
@@ -79,13 +78,10 @@ defmodule Game.PGNotifications do
 
   defp listen(event_name) do
     opts =
-      Keyword.take(Application.get_env(:ex_venture, Data.Repo), [
-        :username,
-        :database,
-        :hostname,
-        :port,
-        :password
-      ])
+      Keyword.take(
+        Application.compile_env(:ex_venture, Data.Repo, []),
+        [:username, :database, :hostname, :port, :password]
+      )
 
     with {:ok, pid} <- Postgrex.Notifications.start_link(opts),
          {:ok, ref} <- Postgrex.Notifications.listen(pid, event_name) do

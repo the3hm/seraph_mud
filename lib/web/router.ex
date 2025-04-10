@@ -1,7 +1,8 @@
 defmodule Web.Router do
   use Web, :router
 
-  @report_errors Application.get_env(:ex_venture, :errors)[:report]
+  @report_errors Keyword.get(Application.compile_env(:ex_venture, :errors, []), :report)
+
 
   if @report_errors do
     use Plug.ErrorHandler

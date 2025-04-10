@@ -7,7 +7,7 @@ defmodule Game.Effect do
   alias Data.Stats
   alias Game.DamageTypes
 
-  @random_effect_range Application.get_env(:ex_venture, :game)[:random_effect_range]
+  @random_effect_range Application.compile_env(:ex_venture, :game, [])[:random_effect_range]
 
   @type continuous_effect :: {Character.t(), Effec.t()}
 

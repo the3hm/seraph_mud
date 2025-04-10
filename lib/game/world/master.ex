@@ -17,10 +17,11 @@ defmodule Game.World.Master do
   @group :world_leaders
   @table :world_leader
 
-  # rebalance every 15 minutes
+  # Rebalance every 15 minutes
   @rebalance_delay 15 * 60 * 1000
 
-  @start_world Application.get_env(:ex_venture, :game)[:world]
+  # Use compile-time environment config for better performance and no warnings
+  @start_world Application.compile_env(:ex_venture, [:game, :world], false)
 
   @impl true
   def leader_selected(term) do
@@ -48,11 +49,8 @@ defmodule Game.World.Master do
   @spec is_world_online?() :: boolean()
   def is_world_online?() do
     case :ets.lookup(@table, :world_online) do
-      [{_, status}] ->
-        status
-
-      _ ->
-        false
+      [{_, status}] -> status
+      _ -> false
     end
   end
 
@@ -84,7 +82,6 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
-  # This is started by the squabble leader
   @impl true
   def handle_cast(:rebalance_zones, state) do
     Logger.info("Starting zones", type: :leader)
@@ -117,8 +114,6 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
-  # filter the member list down to connected nodes
-  # pg2 may not have caught up with the node falling off yet
   defp master_pids() do
     :world
     |> :pg2.get_members()

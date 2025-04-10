@@ -30,7 +30,7 @@ defmodule Game.Emails do
   end
 
   def base_email() do
-    from_email = Application.get_env(:ex_venture, :mailer)[:from]
+    from_email = Application.compile_env(:ex_venture, :mailer, [])[:from]
 
     new_email()
     |> from(ExVenture.config(from_email))

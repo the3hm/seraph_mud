@@ -7,7 +7,7 @@ defmodule Game.Command.Crash do
 
   @required_flags ["admin"]
 
-  @zone Application.get_env(:ex_venture, :game)[:zone]
+  @zone Application.compile_env(:ex_venture, :game, [])[:zone]
 
   commands(["crash"], parse: false)
 
@@ -53,6 +53,7 @@ defmodule Game.Command.Crash do
   def parse(command)
   def parse("crash room"), do: {:room}
   def parse("crash zone"), do: {:zone}
+  def parse(_), do: {:error, :bad_parse, command}
 
   @impl Game.Command
   @doc """
@@ -60,26 +61,16 @@ defmodule Game.Command.Crash do
   """
   def run(command, state)
 
-  def run({:room}, state = %{user: user, save: save}) do
-    case "admin" in user.flags do
-      true ->
-        Environment.crash(save.room_id)
-        state |> Socket.echo("Sent a message to crash the room.")
-
-      false ->
-        state |> Socket.echo("You must be an admin to perform this.")
+  def run({:room}, %{user: user, save: save} = state) do
+    if "admin" in user.flags do
+      Environment.crash(save.room_id)
+      state |> Socket.echo("Sent a message to crash the room.")
+    else
+      state |> Socket.echo("You must be an admin to perform this.")
     end
   end
 
-  def run({:zone}, state = %{user: user, save: save}) do
-    case "admin" in user.flags do
-      true ->
-        {:ok, room} = Environment.look(save.room_id)
-        room.zone_id |> @zone.crash()
-        state |> Socket.echo("Sent a message to crash the zone.")
-
-      false ->
-        state |> Socket.echo("You must be an admin to perform this.")
-    end
-  end
-end
+  def run({:zone}, %{user: user, save: save} = state) do
+    if "admin" in user.flags do
+      {:ok, room} = Environment.look(save.room_id)
+      room.zone_id |>_

@@ -3,7 +3,7 @@ defmodule Game.Socket do
   Client to call the socket module
   """
 
-  @socket Application.get_env(:ex_venture, :networking)[:socket_module]
+  @socket Application.compile_env(:ex_venture, :networking, [])[:socket_module]
 
   def echo(state, string) do
     @socket.echo(state.socket, string)

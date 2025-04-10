@@ -3,7 +3,8 @@ defmodule Game.NPC.Character do
   NPC Character functions
   """
 
-  @rand Application.get_env(:ex_venture, :game)[:rand]
+  # Use compile_env with default for :rand
+  @rand Application.compile_env(:ex_venture, [:game, :rand], :rand)
 
   import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
 
@@ -54,9 +55,6 @@ defmodule Game.NPC.Character do
     %{state | npc: npc, status: status, room_id: npc_spawner.room_id}
   end
 
-  @doc """
-  Check if the NPC died, and if so perform actions
-  """
   @spec maybe_died(map, map, Character.t()) :: :ok
   def maybe_died(stats, state, from)
 
@@ -89,11 +87,6 @@ defmodule Game.NPC.Character do
     |> Map.put(:continuous_effects, [])
   end
 
-  @doc """
-  Drop any currency into the room
-
-  Only when above 0
-  """
   @spec drop_currency(integer, NPC.t(), integer) :: :ok
   def drop_currency(room_id, npc, currency) do
     currency = currency |> currency_amount_to_drop()
@@ -107,20 +100,12 @@ defmodule Game.NPC.Character do
     end
   end
 
-  @doc """
-  Determine how much of the currency should be dropped
-
-  Uses `:rand` by default
-  """
   @spec currency_amount_to_drop(Item.t(), atom) :: integer
   def currency_amount_to_drop(currency, rand \\ @rand) do
     percentage_to_drop = (rand.uniform(50) + 50) / 100.0
     round(Float.ceil(currency * percentage_to_drop))
   end
 
-  @doc """
-  Drop items into the room with a random chance
-  """
   @spec drop_items(NPC.t(), integer()) :: :ok
   def drop_items(npc, room_id) do
     npc.npc_items
@@ -131,11 +116,6 @@ defmodule Game.NPC.Character do
     end)
   end
 
-  @doc """
-  Determine if the item should be dropped
-
-  Uses `:rand` by default
-  """
   @spec drop_item?(NPCItem.t(), atom) :: boolean
   def drop_item?(npc_item, rand \\ @rand)
 
@@ -143,9 +123,6 @@ defmodule Game.NPC.Character do
     rand.uniform(100) <= drop_rate
   end
 
-  @doc """
-  Apply effects to the NPC
-  """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
     {stats, _effects, continuous_effects} =
@@ -153,34 +130,22 @@ defmodule Game.NPC.Character do
 
     npc = Map.put(npc, :stats, stats)
     state = %{state | npc: npc}
-
     state = stats |> maybe_died(state, from)
 
-    case is_alive?(npc) do
-      true ->
-        state |> Map.put(:continuous_effects, continuous_effects ++ state.continuous_effects)
-
-      false ->
-        state |> Map.put(:continuous_effects, [])
+    if is_alive?(npc) do
+      state |> Map.put(:continuous_effects, continuous_effects ++ state.continuous_effects)
+    else
+      state |> Map.put(:continuous_effects, [])
     end
   end
 
-  @doc """
-  Find and apply a continuous effect to an NPC
-  """
   def handle_continuous_effect(state, effect_id) do
     case Effect.find_effect(state, effect_id) do
-      {:ok, effect} ->
-        apply_continuous_effect(state, effect)
-
-      {:error, :not_found} ->
-        state
+      {:ok, effect} -> apply_continuous_effect(state, effect)
+      {:error, :not_found} -> state
     end
   end
 
-  @doc """
-  Apply a continuous effect to an NPC
-  """
   @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
   def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
     {stats, _effects} = Effects.apply_continuous_effect(npc.stats, state, effect)
@@ -189,12 +154,10 @@ defmodule Game.NPC.Character do
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 
-    case is_alive?(npc) do
-      true ->
-        state |> update_effect_count({from, effect})
-
-      false ->
-        state
+    if is_alive?(npc) do
+      state |> update_effect_count({from, effect})
+    else
+      state
     end
   end
 end

@@ -10,7 +10,7 @@ defmodule Game.Command.Run do
   alias Game.Session.GMCP
 
   @direction_regex ~r/(?<count>\d+)?(?<direction>[neswudio]{1,2})/
-  @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
+  @continue_wait Application.compile_env(:ex_venture, [:game, :continue_wait], 200)
 
   commands(["run"])
 
@@ -46,11 +46,7 @@ defmodule Game.Command.Run do
   @doc """
   Run the user around
   """
-  def run(command, state)
-
-  def run({directions}, state) when is_list(directions) do
-    move(directions, state)
-  end
+  def run({directions}, state) when is_list(directions), do: move(directions, state)
 
   def run({directions}, state) do
     case parse_run(directions) do
@@ -62,24 +58,16 @@ defmodule Game.Command.Run do
     end
   end
 
-  # run without directions
-  def run({}, state) do
-    state |> Socket.echo("You run in place.")
-  end
+  def run({}, state), do: Socket.echo(state, "You run in place.")
 
   @doc """
   Move in the first direction of the list
   """
   def move([direction | directions], state) do
     case Move.run({:move, direction}, state) do
-      {:error, :no_exit} ->
-        :ok
-
-      {:error, :no_movement} ->
-        :ok
-
-      {:update, state} ->
-        maybe_continue(state, directions)
+      {:error, :no_exit} -> :ok
+      {:error, :no_movement} -> :ok
+      {:update, state} -> maybe_continue(state, directions)
     end
   end
 
@@ -88,7 +76,7 @@ defmodule Game.Command.Run do
   defp maybe_continue(state, []), do: {:update, state}
 
   defp maybe_continue(state, directions) do
-    state |> GMCP.vitals()
+    GMCP.vitals(state)
 
     {:update, state,
      {%Command{module: __MODULE__, args: {directions}, continue: true}, @continue_wait}}
@@ -107,9 +95,6 @@ defmodule Game.Command.Run do
 
   @doc """
   Expand a single direction command into a list of directions
-
-      iex> Game.Command.Run.expand_direction("3e")
-      ["east", "east", "east"]
   """
   def expand_direction(direction) do
     case Regex.named_captures(@direction_regex, direction) do

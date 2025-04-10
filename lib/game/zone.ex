@@ -9,6 +9,8 @@ defmodule Game.Zone do
 
   use GenServer
 
+  require Logger
+
   alias Game.Door
   alias Game.Map, as: GameMap
   alias Game.NPC
@@ -20,9 +22,11 @@ defmodule Game.Zone do
 
   @key :zones
 
+  @zone Keyword.get(Application.compile_env(:ex_venture, :game, []), :zone)
+
   defmacro __using__(_opts) do
     quote do
-      @zone Application.get_env(:ex_venture, :game)[:zone]
+      @zone Keyword.get(Application.compile_env(:ex_venture, :game, []), :zone)
     end
   end
 
@@ -42,14 +46,10 @@ defmodule Game.Zone do
     ZoneRepo.all()
   end
 
-  #
-  # Client
-  #
+  # Client functions
 
   @doc """
   Let the zone know a room is online
-
-  For sending ticks to
   """
   def room_online(id, room) do
     GenServer.cast(pid(id), {:room_online, room, self()})
@@ -57,8 +57,6 @@ defmodule Game.Zone do
 
   @doc """
   Let the zone know a npc is online
-
-  For sending ticks to
   """
   def npc_online(id, npc) do
     GenServer.cast(pid(id), {:npc_online, npc, self()})
@@ -122,8 +120,6 @@ defmodule Game.Zone do
 
   @doc """
   Update a room's definition in the state
-
-  For making sure mapping data stays correct on updates
   """
   @spec update_room(integer, Room.t()) :: :ok
   def update_room(id, room) do
@@ -143,17 +139,14 @@ defmodule Game.Zone do
   """
   def name(id) do
     case Cachex.get(@key, id) do
-      {:ok, zone} when zone != nil ->
-        {:ok, zone}
-
+      {:ok, zone} when zone != nil -> {:ok, zone}
       _ ->
         case ZoneRepo.get_name(id) do
           {:ok, zone} ->
             Cachex.put(@key, zone.id, zone)
             {:ok, zone}
 
-          {:error, :unknown} ->
-            {:error, :unknown}
+          {:error, :unknown} -> {:error, :unknown}
         end
     end
   end
@@ -174,8 +167,6 @@ defmodule Game.Zone do
 
   @doc """
   Crash a zone process with an unmatched cast
-
-  There should always remain no matching clause for this cast
   """
   def crash(id) do
     GenServer.cast(pid(id), :crash)
@@ -188,9 +179,7 @@ defmodule Game.Zone do
     GenServer.call(pid(id), :get_state)
   end
 
-  #
-  # Server
-  #
+  # Server callbacks
 
   def init(zone) do
     Process.flag(:trap_exit, true)
@@ -212,50 +201,36 @@ defmodule Game.Zone do
 
   def handle_continue(:load_zone, state) do
     zone = ZoneRepo.get(state.zone_id)
-
-    # Keep this the full zone for sector access
     WorldMaster.update_cache(@key, zone)
-
     {:noreply, %{state | zone: zone}}
   end
 
-  def handle_call(:get_state, _from, state) do
-    {:reply, state, state}
-  end
+  def handle_call(:get_state, _from, state), do: {:reply, state, state}
 
   def handle_call(:graveyard, _from, state) do
     case state.zone do
-      %{graveyard_id: graveyard_id} when graveyard_id != nil ->
-        {:reply, {:ok, graveyard_id}, state}
-
-      _ ->
-        {:reply, {:error, :no_graveyard}, state}
+      %{graveyard_id: graveyard_id} when graveyard_id != nil -> {:reply, {:ok, graveyard_id}, state}
+      _ -> {:reply, {:error, :no_graveyard}, state}
     end
   end
 
-  def handle_call({:map, player_at, opts}, _from, state = %{zone: zone}) do
-    case zone.type do
-      "rooms" ->
-        map = """
-        #{zone.name}
+  def handle_call({:map, player_at, opts}, _from, %{zone: %{type: "rooms"} = zone} = state) do
+    map = """
+    #{zone.name}
 
-        #{GameMap.display_map(state, player_at, opts)}
-        """
+    #{GameMap.display_map(state, player_at, opts)}
+    """
+    {:reply, String.trim(map), state}
+  end
 
-        {:reply, map |> String.trim(), state}
+  def handle_call({:map, {x, y}, _opts}, _from, %{zone: %{type: "overworld"} = zone} = state) do
+    cell = %{x: x, y: y}
+    map = """
+    #{zone.name}
 
-      "overworld" ->
-        {x, y} = player_at
-        cell = %{x: x, y: y}
-
-        map = """
-        #{zone.name}
-
-        #{Overworld.map(zone, cell)}
-        """
-
-        {:reply, map |> String.trim(), state}
-    end
+    #{Overworld.map(zone, cell)}
+    """
+    {:reply, String.trim(map), state}
   end
 
   def handle_call({:terminate, :room, room_id}, _from, state) do
@@ -266,105 +241,71 @@ defmodule Game.Zone do
   def handle_cast({:room_online, room, room_pid}, state) do
     Process.link(room_pid)
     Enum.each(room.exits, &Door.maybe_load/1)
-
-    state =
-      state
-      |> Map.put(:rooms, [room | state.rooms])
-      |> Map.put(:room_pids, [{room_pid, room.id} | state.room_pids])
-
-    {:noreply, state}
+    {:noreply, update_room_state(state, room, room_pid)}
   end
 
   def handle_cast({:npc_online, npc, npc_pid}, state) do
     Process.link(npc_pid)
-
-    state =
-      state
-      |> Map.put(:npcs, [npc | state.npcs])
-      |> Map.put(:npc_pids, [{npc_pid, npc.id} | state.npc_pids])
-
-    {:noreply, state}
+    {:noreply, update_npc_state(state, npc, npc_pid)}
   end
 
   def handle_cast({:update, zone}, state) do
     WorldMaster.update_cache(@key, zone)
-
     {:noreply, Map.put(state, :zone, zone)}
   end
 
-  def handle_cast({:room_supervisor, pid}, state) do
-    {:noreply, Map.put(state, :room_supervisor_pid, pid)}
-  end
+  def handle_cast({:room_supervisor, pid}, state), do: {:noreply, Map.put(state, :room_supervisor_pid, pid)}
+  def handle_cast({:npc_supervisor, pid}, state), do: {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
+  def handle_cast({:shop_supervisor, pid}, state), do: {:noreply, Map.put(state, :shop_supervisor_pid, pid)}
 
-  def handle_cast({:npc_supervisor, pid}, state) do
-    {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
-  end
-
-  def handle_cast({:shop_supervisor, pid}, state) do
-    {:noreply, Map.put(state, :shop_supervisor_pid, pid)}
-  end
-
-  def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
-    Room.Supervisor.start_child(room_supervisor_pid, room)
-    Room.Supervisor.start_bus(room_supervisor_pid, room)
+  def handle_cast({:spawn_room, room}, %{room_supervisor_pid: pid} = state) do
+    Room.Supervisor.start_child(pid, room)
+    Room.Supervisor.start_bus(pid, room)
     {:noreply, state}
   end
 
-  def handle_cast({:spawn_npc, npc_spawner}, state = %{npc_supervisor_pid: npc_supervisor_pid}) do
-    NPC.Supervisor.start_child(npc_supervisor_pid, npc_spawner)
+  def handle_cast({:spawn_npc, npc_spawner}, %{npc_supervisor_pid: pid} = state) do
+    NPC.Supervisor.start_child(pid, npc_spawner)
     {:noreply, state}
   end
 
-  def handle_cast({:spawn_shop, shop}, state = %{shop_supervisor_pid: shop_supervisor_pid}) do
-    Shop.Supervisor.start_child(shop_supervisor_pid, shop)
+  def handle_cast({:spawn_shop, shop}, %{shop_supervisor_pid: pid} = state) do
+    Shop.Supervisor.start_child(pid, shop)
     {:noreply, state}
   end
 
   def handle_cast({:update_room, new_room, room_pid}, state) do
-    rooms = state.rooms |> Enum.reject(&(&1.id == new_room.id))
-    room_pids = state.room_pids |> Enum.reject(fn {pid, _} -> pid == room_pid end)
-
-    state =
-      state
-      |> Map.put(:rooms, [new_room | rooms])
-      |> Map.put(:room_pids, [{room_pid, new_room.id} | room_pids])
-
-    {:noreply, state}
+    rooms = Enum.reject(state.rooms, &(&1.id == new_room.id))
+    room_pids = Enum.reject(state.room_pids, fn {pid, _} -> pid == room_pid end)
+    {:noreply, %{state | rooms: [new_room | rooms], room_pids: [{room_pid, new_room.id} | room_pids]}}
   end
 
-  # Clean out the crashed process from stored knowledge, whether npc or room
-  # the NPC is crashing as well, so it will restart on its own
-  # tell all connected players that the process crashed
   def handle_info({:EXIT, pid, _reason}, state) do
     {rooms, room_pids} = reject_room_by_pid(state, pid)
     {npcs, npc_pids} = reject_npc_by_pid(state, pid)
+    {:noreply, %{state | rooms: rooms, room_pids: room_pids, npcs: npcs, npc_pids: npc_pids}}
+  end
 
-    state =
-      state
-      |> Map.put(:rooms, rooms)
-      |> Map.put(:room_pids, room_pids)
-      |> Map.put(:npcs, npcs)
-      |> Map.put(:npc_pids, npc_pids)
+  defp update_room_state(state, room, room_pid) do
+    %{state | rooms: [room | state.rooms], room_pids: [{room_pid, room.id} | state.room_pids]}
+  end
 
-    {:noreply, state}
+  defp update_npc_state(state, npc, npc_pid) do
+    %{state | npcs: [npc | state.npcs], npc_pids: [{npc_pid, npc.id} | state.npc_pids]}
   end
 
   defp reject_room_by_pid(state, pid) do
     case find_pid(state.room_pids, pid) do
       {_pid, room_id} ->
         case Enum.find(state.rooms, &(&1.id == room_id)) do
-          nil ->
-            {state.rooms, state.room_pids}
-
-          room ->
-            rooms = state.rooms |> Enum.reject(&(&1.id == room.id))
-            room_pids = state.room_pids |> Enum.reject(&(elem(&1, 0) == pid))
-
-            {rooms, room_pids}
+          nil -> {state.rooms, state.room_pids}
+          room -> {
+            Enum.reject(state.rooms, &(&1.id == room.id)),
+            Enum.reject(state.room_pids, &(elem(&1, 0) == pid))
+          }
         end
 
-      nil ->
-        {state.rooms, state.room_pids}
+      nil -> {state.rooms, state.room_pids}
     end
   end
 
@@ -372,24 +313,16 @@ defmodule Game.Zone do
     case find_pid(state.npc_pids, pid) do
       {_pid, npc_id} ->
         case Enum.find(state.npcs, &(&1.id == npc_id)) do
-          nil ->
-            {state.npcs, state.npc_pids}
-
-          npc ->
-            npcs = state.npcs |> Enum.reject(&(&1.id == npc.id))
-            npc_pids = state.npc_pids |> Enum.reject(&(elem(&1, 0) == pid))
-
-            {npcs, npc_pids}
+          nil -> {state.npcs, state.npc_pids}
+          npc -> {
+            Enum.reject(state.npcs, &(&1.id == npc.id)),
+            Enum.reject(state.npc_pids, &(elem(&1, 0) == pid))
+          }
         end
 
-      nil ->
-        {state.npcs, state.npc_pids}
+      nil -> {state.npcs, state.npc_pids}
     end
   end
 
-  defp find_pid(pids, matching_pid) do
-    Enum.find(pids, fn {pid, _} ->
-      pid == matching_pid
-    end)
-  end
+  defp find_pid(pids, matching_pid), do: Enum.find(pids, fn {pid, _} -> pid == matching_pid end)
 end

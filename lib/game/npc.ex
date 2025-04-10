@@ -28,9 +28,10 @@ defmodule Game.NPC do
 
   defmacro __using__(_opts) do
     quote do
-      @npc Application.get_env(:ex_venture, :game)[:npc]
+      @npc Keyword.get(Application.compile_env(:ex_venture, :game, []), :npc)
     end
   end
+
 
   defmodule State do
     @moduledoc """

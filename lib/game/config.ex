@@ -10,6 +10,8 @@ defmodule Game.Config do
   alias Data.Save
   alias Data.Stats
 
+  @networking Application.compile_env(:ex_venture, :networking, %{})
+
   @color_config %{
     color_home_header: "#268bd2",
     color_home_link: "#268bd2",
@@ -105,20 +107,10 @@ defmodule Game.Config do
     GenServer.call(__MODULE__, :reset)
   end
 
-  def host() do
-    ExVenture.config(Application.get_env(:ex_venture, :networking)[:host])
-  end
-
-  def port() do
-    ExVenture.config(Application.get_env(:ex_venture, :networking)[:port])
-  end
-
+  def host(), do: ExVenture.config(@networking[:host])
+  def port(), do: ExVenture.config(@networking[:port])
   def ssl?(), do: ssl_port() != nil
-
-  def ssl_port() do
-    port = Keyword.get(Application.get_env(:ex_venture, :networking), :ssl_port, nil)
-    ExVenture.config(port)
-  end
+  def ssl_port(), do: ExVenture.config(@networking[:ssl_port])
 
   @doc """
   Number of "ticks" before regeneration occurs

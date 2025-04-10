@@ -3,7 +3,8 @@ defmodule Networking.Listener do
   Start a new ranch listener
   """
 
-  @port Application.get_env(:ex_venture, :networking)[:port]
+  @networking Application.compile_env(:ex_venture, :networking, %{})
+  @port @networking[:port]
 
   def start_link() do
     opts = %{

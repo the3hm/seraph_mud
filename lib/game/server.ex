@@ -10,7 +10,7 @@ defmodule Game.Server do
   alias Metrics.PlayerInstrumenter
 
   @tick_interval 10_000
-  @report_players Application.get_env(:ex_venture, :game)[:report_players]
+  @report_players Application.compile_env(:ex_venture, :game, [])[:report_players]
 
   @doc """
   How often the server will send a :tick
