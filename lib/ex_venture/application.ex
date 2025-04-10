@@ -3,8 +3,8 @@ defmodule ExVenture.Application do
   # for more information on OTP Applications
   @moduledoc false
 
-  @server Application.get_env(:ex_venture, :networking)[:server]
-  @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
+  @server Application.compile_env(:ex_venture, :networking, [])[:server]
+  @cluster_size Application.compile_env(:ex_venture, :cluster, [])[:size]
 
   use Application
 
@@ -25,11 +25,9 @@ defmodule ExVenture.Application do
 
     Metrics.Setup.setup()
 
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
 
-    report_errors = Application.get_env(:ex_venture, :errors)[:report]
+    report_errors = Application.compile_env(:ex_venture, :errors, [])[:report]
 
     if report_errors do
       {:ok, _} = Logger.add_backend(Sentry.LoggerBackend)
@@ -39,7 +37,7 @@ defmodule ExVenture.Application do
   end
 
   defp cluster_supervisor() do
-    topologies = Application.get_env(:libcluster, :topologies)
+    topologies = Application.compile_env(:libcluster, :topologies, nil)
 
     if topologies && Code.ensure_compiled?(Cluster.Supervisor) do
       {Cluster.Supervisor, [topologies, [name: ExVenture.ClusterSupervisor]]}

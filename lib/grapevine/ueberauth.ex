@@ -22,15 +22,15 @@ defmodule Grapevine.Ueberauth.Strategy do
     ]
 
     def client(opts \\ []) do
-      client_id = Application.get_env(:gossip, :client_id)
-      client_secret = Application.get_env(:gossip, :client_secret)
-
-      opts = Enum.reject(opts, fn {_key, val} -> is_nil(val) end)
+      # ✅ Compile-time safe configuration access
+      client_id = Application.compile_env(:gossip, :client_id, nil)
+      client_secret = Application.compile_env(:gossip, :client_secret, nil)
 
       opts =
         @defaults
         |> Keyword.merge(opts)
         |> Keyword.merge(client_id: client_id, client_secret: client_secret)
+        |> Enum.reject(fn {_k, v} -> is_nil(v) end)
 
       OAuth2.Client.new(opts)
     end
@@ -87,7 +87,7 @@ defmodule Grapevine.Ueberauth.Strategy do
   end
 
   @impl true
-  def handle_callback!(conn = %Plug.Conn{params: %{"code" => code}}) do
+  def handle_callback!(%Plug.Conn{params: %{"code" => code}} = conn) do
     params = [code: code]
     opts = [site: site(conn), redirect_uri: callback_url(conn)]
 
@@ -100,7 +100,7 @@ defmodule Grapevine.Ueberauth.Strategy do
     end
   end
 
-  def handle_callback!(conn = %Plug.Conn{params: %{"error" => "access_denied"}}) do
+  def handle_callback!(%Plug.Conn{params: %{"error" => "access_denied"}} = conn) do
     set_errors!(conn, [error("OAuth2", "Access was denied")])
   end
 
@@ -121,9 +121,7 @@ defmodule Grapevine.Ueberauth.Strategy do
   end
 
   @impl true
-  def uid(conn) do
-    conn.private.grapevine_user["uid"]
-  end
+  def uid(conn), do: conn.private.grapevine_user["uid"]
 
   @impl true
   def info(conn) do
@@ -135,19 +133,17 @@ defmodule Grapevine.Ueberauth.Strategy do
 
   defp fetch_user(conn, token) do
     conn = put_private(conn, :grapevine_token, token)
-
     opts = [site: site(conn)]
-    response = OAuth.get(token, "/users/me", opts)
 
-    case response do
-      {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
+    case OAuth.get(token, "/users/me", opts) do
+      {:ok, %OAuth2.Response{status_code: 401}} ->
         set_errors!(conn, [error("token", "unauthorized")])
 
       {:ok, %OAuth2.Response{status_code: 200, body: user}} ->
         put_private(conn, :grapevine_user, user)
 
-      {:error, %OAuth2.Response{status_code: status_code}} ->
-        set_errors!(conn, [error("OAuth2", status_code)])
+      {:error, %OAuth2.Response{status_code: code}} ->
+        set_errors!(conn, [error("OAuth2", code)])
 
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])

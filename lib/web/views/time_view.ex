@@ -1,5 +1,8 @@
 defmodule Web.TimeView do
-  @timezone Application.get_env(:ex_venture, :timezone)
+  @moduledoc false
+
+  # ✅ Use compile_env for compile-time safety
+  @timezone Application.compile_env(:ex_venture, :timezone, "America/New_York")
 
   def time(time) do
     new_york = Timex.Timezone.get(@timezone, Timex.now())
