@@ -7,15 +7,13 @@ defmodule Web.Admin.NPCScriptController do
   use Web.AdminController
 
   alias Web.NPC
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Shows the script associated with the given NPC.
   """
   def show(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-
-    render(conn, "show.html", npc: npc)
+    render(conn, :show, npc: npc)
   end
 
   @doc """
@@ -23,9 +21,7 @@ defmodule Web.Admin.NPCScriptController do
   """
   def edit(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-    changeset = NPC.edit(npc)
-
-    render(conn, "edit.html", npc: npc, changeset: changeset)
+    render(conn, :edit, npc: npc, changeset: NPC.edit(npc))
   end
 
   @doc """
@@ -34,18 +30,19 @@ defmodule Web.Admin.NPCScriptController do
   def update(conn, %{"npc_id" => id, "npc" => params}) do
     case NPC.update(id, params) do
       {:ok, npc} ->
-        conn
-        |> put_flash(:info, "Updated #{npc.name}!")
-        |> redirect(to: Routes.admin_npc_script_path(conn, :show, npc.id))
+        redirect(conn,
+          to: ~p"/admin/npcs/#{npc.id}/script",
+          flash: [info: "Updated #{npc.name}!"]
+        )
 
       {:error, changeset} ->
         npc = NPC.get(id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating #{npc.name}. Please try again.")
-        |> assign(:npc, npc)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          npc: npc,
+          changeset: changeset,
+          error_flash: "There was an issue updating #{npc.name}. Please try again."
+        )
     end
   end
 end

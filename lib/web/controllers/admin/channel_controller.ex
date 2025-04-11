@@ -7,7 +7,7 @@ defmodule Web.Admin.ChannelController do
 
   alias Web.Channel
 
-  plug :ensure_admin!
+  plug(:ensure_admin!)
 
   @doc """
   Lists all channels.
@@ -15,9 +15,7 @@ defmodule Web.Admin.ChannelController do
   def index(conn, _params) do
     channels = Channel.all()
 
-    conn
-    |> assign(:channels, channels)
-    |> render("index.html")
+    render(conn, :index, channels: channels)
   end
 
   @doc """
@@ -26,20 +24,14 @@ defmodule Web.Admin.ChannelController do
   def show(conn, %{"id" => id}) do
     channel = Channel.get(id)
 
-    conn
-    |> assign(:channel, channel)
-    |> render("show.html")
+    render(conn, :show, channel: channel)
   end
 
   @doc """
   Displays a form for creating a new channel.
   """
   def new(conn, _params) do
-    changeset = Channel.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new, changeset: Channel.new())
   end
 
   @doc """
@@ -48,15 +40,16 @@ defmodule Web.Admin.ChannelController do
   def create(conn, %{"channel" => params}) do
     case Channel.create(params) do
       {:ok, channel} ->
-        conn
-        |> put_flash(:info, "#{channel.name} created!")
-        |> redirect(to: channel_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/channels",
+          flash: [info: "#{channel.name} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue creating the channel. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was an issue creating the channel. Please try again."
+        )
     end
   end
 
@@ -65,12 +58,11 @@ defmodule Web.Admin.ChannelController do
   """
   def edit(conn, %{"id" => id}) do
     channel = Channel.get(id)
-    changeset = Channel.edit(channel)
 
-    conn
-    |> assign(:channel, channel)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, :edit,
+      channel: channel,
+      changeset: Channel.edit(channel)
+    )
   end
 
   @doc """
@@ -81,16 +73,17 @@ defmodule Web.Admin.ChannelController do
 
     case Channel.update(channel, params) do
       {:ok, _channel} ->
-        conn
-        |> put_flash(:info, "#{channel.name} updated!")
-        |> redirect(to: channel_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/channels",
+          flash: [info: "#{channel.name} updated!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue updating #{channel.name}. Please try again.")
-        |> assign(:channel, channel)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          channel: channel,
+          changeset: changeset,
+          error_flash: "There was an issue updating #{channel.name}. Please try again."
+        )
     end
   end
 end

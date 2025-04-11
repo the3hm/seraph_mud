@@ -2,7 +2,7 @@ defmodule Web.Admin.DashboardControllerTest do
   use Web.ConnCase
 
   test "hitting the dashboard redirects to session", %{conn: conn} do
-    conn = get conn, dashboard_path(conn, :index)
+    conn = get conn, ~p"/admin/dashboard"
     assert redirected_to(conn) == session_path(conn, :new)
   end
 
@@ -12,7 +12,7 @@ defmodule Web.Admin.DashboardControllerTest do
     user = %{user | characters: [character]}
     conn = conn |> assign(:current_user, user)
 
-    conn = get conn, dashboard_path(conn, :index)
+    conn = get conn, ~p"/admin/dashboard"
     assert html_response(conn, 200)
   end
 
@@ -22,7 +22,7 @@ defmodule Web.Admin.DashboardControllerTest do
     user = %{user | characters: [character]}
     conn = conn |> assign(:current_user, user)
 
-    conn = get conn, dashboard_path(conn, :index)
+    conn = get conn, ~p"/admin/dashboard"
     assert html_response(conn, 200)
   end
 
@@ -32,7 +32,7 @@ defmodule Web.Admin.DashboardControllerTest do
     user = %{user | characters: [character]}
     conn = conn |> assign(:current_user, user)
 
-    conn = get conn, dashboard_path(conn, :index)
+    conn = get conn, ~p"/admin/dashboard"
     assert redirected_to(conn) == public_page_path(conn, :index)
   end
 end

@@ -6,7 +6,6 @@ defmodule Web.ClassController do
   use Web, :controller
 
   alias Web.Class
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Lists all classes alphabetically.
@@ -21,7 +20,7 @@ defmodule Web.ClassController do
   def show(conn, %{"id" => id}) do
     case Class.get(id) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       class ->
         render(conn, :show, class: class, extended: true)

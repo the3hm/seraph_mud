@@ -11,7 +11,7 @@ defmodule Web.AuthenticatedController do
 
       alias Web.Router.Helpers, as: Routes
 
-      plug :load_user
+      plug(:load_user)
 
       @doc false
       defp load_user(conn, _opts) do

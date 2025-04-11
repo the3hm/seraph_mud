@@ -18,10 +18,10 @@ defmodule Web.Admin.HelpTopicController do
     %{page: page, per: per} = conn.assigns
     %{page: help_topics, pagination: pagination} = HelpTopic.all(page: page, per: per)
 
-    conn
-    |> assign(:help_topics, help_topics)
-    |> assign(:pagination, pagination)
-    |> render("index.html")
+    render(conn, :index,
+      help_topics: help_topics,
+      pagination: pagination
+    )
   end
 
   @doc """
@@ -29,21 +29,14 @@ defmodule Web.Admin.HelpTopicController do
   """
   def show(conn, %{"id" => id}) do
     help_topic = HelpTopic.get(id)
-
-    conn
-    |> assign(:help_topic, help_topic)
-    |> render("show.html")
+    render(conn, :show, help_topic: help_topic)
   end
 
   @doc """
   Render form to create a new help topic.
   """
   def new(conn, _params) do
-    changeset = HelpTopic.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new, changeset: HelpTopic.new())
   end
 
   @doc """
@@ -52,15 +45,16 @@ defmodule Web.Admin.HelpTopicController do
   def create(conn, %{"help_topic" => params}) do
     case HelpTopic.create(params) do
       {:ok, help_topic} ->
-        conn
-        |> put_flash(:info, "#{help_topic.name} created!")
-        |> redirect(to: help_topic_path(conn, :show, help_topic.id))
+        redirect(conn,
+          to: ~p"/admin/help_topics/#{help_topic.id}",
+          flash: [info: "#{help_topic.name} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem creating the help topic. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was a problem creating the help topic. Please try again."
+        )
     end
   end
 
@@ -69,12 +63,7 @@ defmodule Web.Admin.HelpTopicController do
   """
   def edit(conn, %{"id" => id}) do
     help_topic = HelpTopic.get(id)
-    changeset = HelpTopic.edit(help_topic)
-
-    conn
-    |> assign(:help_topic, help_topic)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, :edit, help_topic: help_topic, changeset: HelpTopic.edit(help_topic))
   end
 
   @doc """
@@ -83,18 +72,19 @@ defmodule Web.Admin.HelpTopicController do
   def update(conn, %{"id" => id, "help_topic" => params}) do
     case HelpTopic.update(id, params) do
       {:ok, help_topic} ->
-        conn
-        |> put_flash(:info, "#{help_topic.name} updated!")
-        |> redirect(to: help_topic_path(conn, :show, help_topic.id))
+        redirect(conn,
+          to: ~p"/admin/help_topics/#{help_topic.id}",
+          flash: [info: "#{help_topic.name} updated!"]
+        )
 
       {:error, changeset} ->
         help_topic = HelpTopic.get(id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating #{help_topic.name}. Please try again.")
-        |> assign(:help_topic, help_topic)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          help_topic: help_topic,
+          changeset: changeset,
+          error_flash: "There was an issue updating #{help_topic.name}. Please try again."
+        )
     end
   end
 end

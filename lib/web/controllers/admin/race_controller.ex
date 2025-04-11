@@ -6,27 +6,26 @@ defmodule Web.Admin.RaceController do
   use Web.AdminController
 
   alias Web.Race
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Lists all available races.
   """
   def index(conn, _params) do
-    render(conn, "index.html", races: Race.all())
+    render(conn, :index, races: Race.all())
   end
 
   @doc """
   Shows a single race with details and options.
   """
   def show(conn, %{"id" => id}) do
-    render(conn, "show.html", race: Race.get(id))
+    render(conn, :show, race: Race.get(id))
   end
 
   @doc """
   Renders the new race form.
   """
   def new(conn, _params) do
-    render(conn, "new.html", changeset: Race.new())
+    render(conn, :new, changeset: Race.new())
   end
 
   @doc """
@@ -35,14 +34,16 @@ defmodule Web.Admin.RaceController do
   def create(conn, %{"race" => params}) do
     case Race.create(params) do
       {:ok, race} ->
-        conn
-        |> put_flash(:info, "#{race.name} created!")
-        |> redirect(to: Routes.admin_race_path(conn, :show, race.id))
+        redirect(conn,
+          to: ~p"/admin/races/#{race.id}",
+          flash: [info: "#{race.name} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem creating the race. Please try again.")
-        |> render("new.html", changeset: changeset)
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was a problem creating the race. Please try again."
+        )
     end
   end
 
@@ -51,7 +52,7 @@ defmodule Web.Admin.RaceController do
   """
   def edit(conn, %{"id" => id}) do
     race = Race.get(id)
-    render(conn, "edit.html", race: race, changeset: Race.edit(race))
+    render(conn, :edit, race: race, changeset: Race.edit(race))
   end
 
   @doc """
@@ -60,16 +61,19 @@ defmodule Web.Admin.RaceController do
   def update(conn, %{"id" => id, "race" => params}) do
     case Race.update(id, params) do
       {:ok, race} ->
-        conn
-        |> put_flash(:info, "#{race.name} updated!")
-        |> redirect(to: Routes.admin_race_path(conn, :show, race.id))
+        redirect(conn,
+          to: ~p"/admin/races/#{race.id}",
+          flash: [info: "#{race.name} updated!"]
+        )
 
       {:error, changeset} ->
         race = Race.get(id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating #{race.name}. Please try again.")
-        |> render("edit.html", race: race, changeset: changeset)
+        render(conn, :edit,
+          race: race,
+          changeset: changeset,
+          error_flash: "There was an issue updating #{race.name}. Please try again."
+        )
     end
   end
 end

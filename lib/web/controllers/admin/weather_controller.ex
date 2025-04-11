@@ -9,7 +9,7 @@ defmodule Web.Admin.WeatherController do
   alias Web.Router.Helpers, as: Routes
   alias Web.Weather
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all weathers with optional filters and pagination.

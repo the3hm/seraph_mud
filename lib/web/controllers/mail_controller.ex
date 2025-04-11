@@ -8,12 +8,12 @@ defmodule Web.MailController do
   alias Web.Mail
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser
-  plug Web.Plug.PublicEnsureCharacter
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.PublicEnsureUser)
+  plug(Web.Plug.PublicEnsureCharacter)
+  plug(Web.Plug.FetchPage when action in [:index])
 
-  plug :load_mail when action in [:show]
-  plug :ensure_your_mail! when action in [:show]
+  plug(:load_mail when action in [:show])
+  plug(:ensure_your_mail! when action in [:show])
 
   @doc """
   Displays paginated mail inbox for the current character.

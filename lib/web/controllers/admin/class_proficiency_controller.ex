@@ -16,11 +16,11 @@ defmodule Web.Admin.ClassProficiencyController do
     changeset = Class.new_class_proficiency(class)
     proficiencies = Proficiency.all()
 
-    conn
-    |> assign(:class, class)
-    |> assign(:proficiencies, proficiencies)
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new,
+      class: class,
+      proficiencies: proficiencies,
+      changeset: changeset
+    )
   end
 
   @doc """
@@ -31,19 +31,20 @@ defmodule Web.Admin.ClassProficiencyController do
 
     case Class.add_proficiency(class, params) do
       {:ok, _class_proficiency} ->
-        conn
-        |> put_flash(:info, "Proficiency added to #{class.name}")
-        |> redirect(to: class_path(conn, :show, class.id))
+        redirect(conn,
+          to: ~p"/admin/classes/#{class.id}",
+          flash: [info: "Proficiency added to #{class.name}"]
+        )
 
       {:error, changeset} ->
         proficiencies = Proficiency.all()
 
-        conn
-        |> put_flash(:error, "There was an issue adding the proficiency")
-        |> assign(:class, class)
-        |> assign(:proficiencies, proficiencies)
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          class: class,
+          proficiencies: proficiencies,
+          changeset: changeset,
+          error_flash: "There was an issue adding the proficiency"
+        )
     end
   end
 
@@ -53,14 +54,16 @@ defmodule Web.Admin.ClassProficiencyController do
   def delete(conn, %{"id" => id}) do
     case Class.remove_proficiency(id) do
       {:ok, class_proficiency} ->
-        conn
-        |> put_flash(:info, "Proficiency removed")
-        |> redirect(to: class_path(conn, :show, class_proficiency.class_id))
+        redirect(conn,
+          to: ~p"/admin/classes/#{class_proficiency.class_id}",
+          flash: [info: "Proficiency removed"]
+        )
 
       _ ->
-        conn
-        |> put_flash(:error, "There was a problem removing the proficiency")
-        |> redirect(to: dashboard_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/dashboard",
+          flash: [error: "There was a problem removing the proficiency"]
+        )
     end
   end
 end

@@ -11,11 +11,7 @@ defmodule Web.Admin.ColorCodeController do
   Renders the form to create a new color code.
   """
   def new(conn, _params) do
-    changeset = ColorCode.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new, changeset: ColorCode.new())
   end
 
   @doc """
@@ -24,15 +20,16 @@ defmodule Web.Admin.ColorCodeController do
   def create(conn, %{"color_code" => params}) do
     case ColorCode.create(params) do
       {:ok, color_code} ->
-        conn
-        |> put_flash(:info, "#{color_code.key} created!")
-        |> redirect(to: color_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/colors",
+          flash: [info: "#{color_code.key} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue creating the color code. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was an issue creating the color code. Please try again."
+        )
     end
   end
 
@@ -41,12 +38,11 @@ defmodule Web.Admin.ColorCodeController do
   """
   def edit(conn, %{"id" => id}) do
     color_code = ColorCode.get(id)
-    changeset = ColorCode.edit(color_code)
 
-    conn
-    |> assign(:color_code, color_code)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, :edit,
+      color_code: color_code,
+      changeset: ColorCode.edit(color_code)
+    )
   end
 
   @doc """
@@ -55,18 +51,19 @@ defmodule Web.Admin.ColorCodeController do
   def update(conn, %{"id" => id, "color_code" => params}) do
     case ColorCode.update(id, params) do
       {:ok, color_code} ->
-        conn
-        |> put_flash(:info, "#{color_code.key} updated!")
-        |> redirect(to: color_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/colors",
+          flash: [info: "#{color_code.key} updated!"]
+        )
 
       {:error, changeset} ->
         color_code = ColorCode.get(id)
 
-        conn
-        |> put_flash(:error, "There was a problem updating #{color_code.key}. Please try again.")
-        |> assign(:color_code, color_code)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          color_code: color_code,
+          changeset: changeset,
+          error_flash: "There was a problem updating #{color_code.key}. Please try again."
+        )
     end
   end
 end

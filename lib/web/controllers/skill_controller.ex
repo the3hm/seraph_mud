@@ -6,9 +6,8 @@ defmodule Web.SkillController do
   use Web, :controller
 
   alias Web.Skill
-  alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.FetchPage, [per: 10] when action in [:index]
+  plug(Web.Plug.FetchPage, [per: 10] when action in [:index])
 
   @doc """
   Lists all enabled skills with pagination.
@@ -31,7 +30,7 @@ defmodule Web.SkillController do
   def show(conn, %{"id" => id}) do
     case Skill.get(id) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       skill ->
         render(conn, :show, skill: skill)

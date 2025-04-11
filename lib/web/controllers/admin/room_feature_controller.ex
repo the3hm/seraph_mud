@@ -5,7 +5,6 @@ defmodule Web.Admin.RoomFeatureController do
 
   use Web.AdminController
 
-  alias Web.Router.Helpers, as: Routes
   alias Web.Room
 
   @doc """
@@ -14,7 +13,7 @@ defmodule Web.Admin.RoomFeatureController do
   def new(conn, %{"room_id" => room_id}) do
     room = Room.get(room_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       room: room,
       feature: %{}
     )
@@ -28,16 +27,16 @@ defmodule Web.Admin.RoomFeatureController do
 
     case Room.add_feature(room, params) do
       {:ok, _room} ->
-        conn
-        |> put_flash(:info, "Feature added!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}",
+          flash: [info: "Feature added!"]
+        )
 
       {:error, feature} ->
-        conn
-        |> put_flash(:error, "There was an issue adding the feature. Please try again.")
-        |> render("new.html",
+        render(conn, :new,
           room: room,
-          feature: feature
+          feature: feature,
+          error_flash: "There was an issue adding the feature. Please try again."
         )
     end
   end
@@ -49,7 +48,7 @@ defmodule Web.Admin.RoomFeatureController do
     room = Room.get(room_id)
     feature = Room.get_feature(room, id)
 
-    render(conn, "edit.html",
+    render(conn, :edit,
       room: room,
       feature: feature
     )
@@ -63,16 +62,16 @@ defmodule Web.Admin.RoomFeatureController do
 
     case Room.edit_feature(room, id, params) do
       {:ok, _room} ->
-        conn
-        |> put_flash(:info, "Room feature updated!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}",
+          flash: [info: "Room feature updated!"]
+        )
 
       {:error, feature} ->
-        conn
-        |> put_flash(:error, "There was an issue updating the feature. Please try again.")
-        |> render("edit.html",
+        render(conn, :edit,
           room: room,
-          feature: feature
+          feature: feature,
+          error_flash: "There was an issue updating the feature. Please try again."
         )
     end
   end
@@ -85,14 +84,16 @@ defmodule Web.Admin.RoomFeatureController do
 
     case Room.delete_feature(room, id) do
       {:ok, _} ->
-        conn
-        |> put_flash(:info, "Feature removed!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}",
+          flash: [info: "Feature removed!"]
+        )
 
       _ ->
-        conn
-        |> put_flash(:error, "There was an issue removing the feature. Please try again.")
-        |> redirect(to: Routes.dashboard_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/dashboard",
+          flash: [error: "There was an issue removing the feature. Please try again."]
+        )
     end
   end
 end

@@ -9,7 +9,7 @@ defmodule Web.Admin.NoteController do
   alias Web.Note
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   List all notes with optional filters.

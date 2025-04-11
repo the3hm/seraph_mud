@@ -5,7 +5,7 @@ defmodule Web.Admin.ConfigController do
 
   use Web.AdminController
 
-  plug :ensure_admin!
+  plug(:ensure_admin!)
 
   alias Web.Config
 
@@ -13,7 +13,7 @@ defmodule Web.Admin.ConfigController do
   Render the index page for config settings.
   """
   def index(conn, _params) do
-    render(conn, "index.html")
+    render(conn, :index)
   end
 
   @doc """
@@ -27,7 +27,7 @@ defmodule Web.Admin.ConfigController do
         conn
         |> assign(:name, name)
         |> assign(:changeset, changeset)
-        |> render("new.html")
+        |> render(:new)
 
       config ->
         changeset = Config.edit(config)
@@ -35,7 +35,7 @@ defmodule Web.Admin.ConfigController do
         conn
         |> assign(:config, config)
         |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render(:edit)
     end
   end
 
@@ -47,7 +47,7 @@ defmodule Web.Admin.ConfigController do
       {:ok, _config} ->
         conn
         |> put_flash(:info, "Config updated!")
-        |> redirect(to: config_path(conn, :index))
+        |> redirect(to: ~p"/admin/config")
 
       {:error, changeset} ->
         config = Config.get(name)
@@ -56,7 +56,7 @@ defmodule Web.Admin.ConfigController do
         |> put_flash(:error, "There was an issue updating the config. Please try again.")
         |> assign(:config, config)
         |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render(:edit)
     end
   end
 end

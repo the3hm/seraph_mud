@@ -5,7 +5,6 @@ defmodule Web.Admin.RoomItemController do
 
   use Web.AdminController
 
-  alias Web.Router.Helpers, as: Routes
   alias Web.Item
   alias Web.Room
 
@@ -44,11 +43,14 @@ defmodule Web.Admin.RoomItemController do
       {:ok, room} ->
         conn
         |> put_flash(:info, "Item added to #{room.name}")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        |> redirect(to: ~p"/admin/rooms/#{room.id}")
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "There was an issue adding the item to #{room.name}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was an issue adding the item to #{room.name}. Please try again."
+        )
         |> render("add-item.html",
           items: Item.all(),
           room: room
@@ -66,7 +68,7 @@ defmodule Web.Admin.RoomItemController do
       {:ok, room_item} ->
         conn
         |> put_flash(:info, "Item spawn added to the room!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room_item.room_id))
+        |> redirect(to: ~p"/admin/rooms/#{room_item.room_id}")
 
       {:error, changeset} ->
         conn
@@ -87,12 +89,12 @@ defmodule Web.Admin.RoomItemController do
       {:ok, room_item} ->
         conn
         |> put_flash(:info, "Item spawn deleted!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room_item.room_id))
+        |> redirect(to: ~p"/admin/rooms/#{room_item.room_id}")
 
       _ ->
         conn
         |> put_flash(:error, "There was an issue deleting the item spawn. Please try again.")
-        |> redirect(to: Routes.dashboard_path(conn, :index))
+        |> redirect(to: ~p"/admin/dashboard")
     end
   end
 end

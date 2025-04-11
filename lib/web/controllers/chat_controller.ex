@@ -7,8 +7,8 @@ defmodule Web.ChatController do
 
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser
-  plug Web.Plug.PublicEnsureCharacter
+  plug(Web.Plug.PublicEnsureUser)
+  plug(Web.Plug.PublicEnsureCharacter)
 
   @doc """
   Renders the in-game chat interface.

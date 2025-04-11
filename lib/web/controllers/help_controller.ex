@@ -8,55 +8,54 @@ defmodule Web.HelpController do
   alias Game.Help
   alias Game.Proficiencies
   alias Web.HelpTopic
-  alias Web.Router.Helpers, as: Routes
 
   def index(conn, _params) do
     help_topics = HelpTopic.all(alpha: true)
-    render(conn, "index.html", help_topics: help_topics)
+    render(conn, :index, help_topics: help_topics)
   end
 
   def show(conn, %{"id" => id}) do
     case HelpTopic.get(id) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       help_topic ->
-        render(conn, "show.html", help_topic: help_topic)
+        render(conn, :show, help_topic: help_topic)
     end
   end
 
   def commands(conn, _params) do
     commands = HelpTopic.commands()
-    render(conn, "commands.html", commands: commands)
+    render(conn, :commands, commands: commands)
   end
 
   def command(conn, %{"command" => command}) do
     with {:ok, command} <- HelpTopic.command(command),
          :ok <- check_user_allowed(conn, command) do
-      render(conn, "command.html", command: command)
+      render(conn, :command, command: command)
     else
       _ ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
     end
   end
 
   def built_in(conn, %{"id" => id}) do
     case HelpTopic.built_in(id) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       built_in ->
-        render(conn, "built_in.html", built_in: built_in)
+        render(conn, :built_in, built_in: built_in)
     end
   end
 
   def proficiency(conn, %{"id" => id}) do
     with {id, _} <- Integer.parse(id),
          {:ok, proficiency} <- Proficiencies.get(id) do
-      render(conn, "proficiency.html", proficiency: proficiency)
+      render(conn, :proficiency, proficiency: proficiency)
     else
       _ ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
     end
   end
 

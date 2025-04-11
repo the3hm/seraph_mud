@@ -9,7 +9,7 @@ defmodule Web.Admin.NPCController do
   alias Web.NPC
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   List all NPCs with optional filter params.

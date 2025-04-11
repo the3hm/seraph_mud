@@ -7,7 +7,7 @@ defmodule Web.Admin.ClassController do
 
   alias Web.Class
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all classes with pagination.
@@ -19,7 +19,7 @@ defmodule Web.Admin.ClassController do
     conn
     |> assign(:classes, classes)
     |> assign(:pagination, pagination)
-    |> render("index.html")
+    |> render(:index)
   end
 
   @doc """
@@ -30,7 +30,7 @@ defmodule Web.Admin.ClassController do
 
     conn
     |> assign(:class, class)
-    |> render("show.html")
+    |> render(:show)
   end
 
   @doc """
@@ -41,7 +41,7 @@ defmodule Web.Admin.ClassController do
 
     conn
     |> assign(:changeset, changeset)
-    |> render("new.html")
+    |> render(:new)
   end
 
   @doc """
@@ -52,13 +52,13 @@ defmodule Web.Admin.ClassController do
       {:ok, class} ->
         conn
         |> put_flash(:info, "#{class.name} created!")
-        |> redirect(to: class_path(conn, :show, class.id))
+        |> redirect(to: ~p"/admin/classes/#{class.id}")
 
       {:error, changeset} ->
         conn
         |> put_flash(:error, "There was an issue creating the class. Please try again.")
         |> assign(:changeset, changeset)
-        |> render("new.html")
+        |> render(:new)
     end
   end
 
@@ -72,7 +72,7 @@ defmodule Web.Admin.ClassController do
     conn
     |> assign(:class, class)
     |> assign(:changeset, changeset)
-    |> render("edit.html")
+    |> render(:edit)
   end
 
   @doc """
@@ -83,7 +83,7 @@ defmodule Web.Admin.ClassController do
       {:ok, class} ->
         conn
         |> put_flash(:info, "#{class.name} updated!")
-        |> redirect(to: class_path(conn, :show, class.id))
+        |> redirect(to: ~p"/admin/classes/#{class.id}")
 
       {:error, changeset} ->
         class = Class.get(id)
@@ -92,7 +92,7 @@ defmodule Web.Admin.ClassController do
         |> put_flash(:error, "There was an issue updating #{class.name}. Please try again.")
         |> assign(:class, class)
         |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render(:edit)
     end
   end
 end

@@ -9,7 +9,7 @@ defmodule Web.Admin.ItemController do
   alias Web.Item
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   List all items with optional filters and pagination.

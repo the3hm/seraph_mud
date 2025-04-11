@@ -6,7 +6,6 @@ defmodule Web.AnnouncementController do
   use Web, :controller
 
   alias Web.Announcement
-  alias Web.Router.Helpers, as: Routes
 
   plug(:fetch_announcement when action in [:show])
   plug(:check_published when action in [:show])
@@ -16,14 +15,14 @@ defmodule Web.AnnouncementController do
   """
   def feed(conn, _params) do
     announcements = Announcement.recent(sticky: false)
-    render(conn, "feed.xml", announcements: announcements)
+    render(conn, :feed, announcements: announcements)
   end
 
   @doc """
   Shows a single announcement.
   """
   def show(conn, _params) do
-    render(conn, "show.html")
+    render(conn, :show)
   end
 
   def fetch_announcement(conn, _opts) do
@@ -50,7 +49,7 @@ defmodule Web.AnnouncementController do
 
   defp redirect_home(conn) do
     conn
-    |> redirect(to: Routes.public_page_path(conn, :index))
+    |> redirect(to: ~p"/")
     |> halt()
   end
 end

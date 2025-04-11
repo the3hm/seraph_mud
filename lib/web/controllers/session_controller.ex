@@ -6,13 +6,12 @@ defmodule Web.SessionController do
   use Web, :controller
 
   alias Web.User
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders the login form.
   """
   def new(conn, _params) do
-    render(conn, "new.html")
+    render(conn, :new)
   end
 
   @doc """
@@ -23,7 +22,7 @@ defmodule Web.SessionController do
       {:error, :invalid} ->
         conn
         |> put_flash(:error, "Invalid sign in")
-        |> redirect(to: Routes.public_session_path(conn, :new))
+        |> redirect(to: ~p"/session/new")
 
       user ->
         conn
@@ -38,13 +37,13 @@ defmodule Web.SessionController do
   def delete(conn, _params) do
     conn
     |> clear_session()
-    |> redirect(to: Routes.public_page_path(conn, :index))
+    |> redirect(to: ~p"/")
   end
 
   defp after_sign_in_redirect(conn) do
     case get_session(conn, :last_path) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       path ->
         conn

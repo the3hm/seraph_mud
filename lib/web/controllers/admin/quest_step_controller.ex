@@ -6,7 +6,6 @@ defmodule Web.Admin.QuestStepController do
   use Web.AdminController
 
   alias Web.Quest
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders the new quest step form.
@@ -15,7 +14,7 @@ defmodule Web.Admin.QuestStepController do
     quest = Quest.get(quest_id)
     changeset = Quest.new_step(quest)
 
-    render(conn, "new.html",
+    render(conn, :new,
       quest: quest,
       type: type,
       changeset: changeset
@@ -37,12 +36,13 @@ defmodule Web.Admin.QuestStepController do
 
     case Quest.create_step(quest, params) do
       {:ok, _step} ->
-        conn
-        |> put_flash(:info, "Step added for #{quest.name}.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, quest.id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{quest.id}",
+          flash: [info: "Step added for #{quest.name}."]
+        )
 
       {:error, changeset} ->
-        render(conn, "new.html",
+        render(conn, :new,
           quest: quest,
           type: params["type"],
           changeset: changeset
@@ -56,7 +56,7 @@ defmodule Web.Admin.QuestStepController do
   def edit(conn, %{"id" => id}) do
     step = Quest.get_step(id)
 
-    render(conn, "edit.html",
+    render(conn, :edit,
       step: step,
       quest: step.quest,
       changeset: Quest.edit_step(step)
@@ -69,14 +69,15 @@ defmodule Web.Admin.QuestStepController do
   def update(conn, %{"id" => id, "quest_step" => params}) do
     case Quest.update_step(id, params) do
       {:ok, step} ->
-        conn
-        |> put_flash(:info, "Step updated.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, step.quest_id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{step.quest_id}",
+          flash: [info: "Step updated."]
+        )
 
       {:error, changeset} ->
         step = Quest.get_step(id)
 
-        render(conn, "edit.html",
+        render(conn, :edit,
           step: step,
           quest: step.quest,
           changeset: changeset
@@ -90,16 +91,18 @@ defmodule Web.Admin.QuestStepController do
   def delete(conn, %{"id" => id}) do
     case Quest.delete_step(id) do
       {:ok, step} ->
-        conn
-        |> put_flash(:info, "Step removed.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, step.quest_id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{step.quest_id}",
+          flash: [info: "Step removed."]
+        )
 
       {:error, _changeset} ->
         step = Quest.get_step(id)
 
-        conn
-        |> put_flash(:error, "There was an issue removing the step. Please try again.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, step.quest_id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{step.quest_id}",
+          flash: [error: "There was an issue removing the step. Please try again."]
+        )
     end
   end
 end

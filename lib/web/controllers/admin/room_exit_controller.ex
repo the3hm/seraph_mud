@@ -5,7 +5,6 @@ defmodule Web.Admin.RoomExitController do
 
   use Web.AdminController
 
-  alias Web.Router.Helpers, as: Routes
   alias Web.Proficiency
   alias Web.Room
   alias Web.Zone
@@ -17,7 +16,7 @@ defmodule Web.Admin.RoomExitController do
     room = Room.get(room_id)
     zone = Zone.get(room.zone_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       changeset: Room.new_exit(),
       zone: zone,
       room: room,
@@ -32,15 +31,16 @@ defmodule Web.Admin.RoomExitController do
   def create(conn, %{"room_id" => room_id, "exit" => params, "direction" => direction}) do
     case Room.create_exit(params) do
       {:ok, _room_exit} ->
-        conn
-        |> put_flash(:info, "Exit created!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room_id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room_id}",
+          flash: [info: "Exit created!"]
+        )
 
       {:error, changeset} ->
         room = Room.get(room_id)
         zone = Zone.get(room.zone_id)
 
-        render(conn, "new.html",
+        render(conn, :new,
           changeset: changeset,
           zone: zone,
           room: room,
@@ -56,14 +56,16 @@ defmodule Web.Admin.RoomExitController do
   def delete(conn, %{"id" => id, "room_id" => room_id}) do
     case Room.delete_exit(id) do
       {:ok, _room_exit} ->
-        conn
-        |> put_flash(:info, "Exit removed!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room_id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room_id}",
+          flash: [info: "Exit removed!"]
+        )
 
       {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue removing the exit. Please try again.")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room_id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room_id}",
+          flash: [error: "There was an issue removing the exit. Please try again."]
+        )
     end
   end
 end

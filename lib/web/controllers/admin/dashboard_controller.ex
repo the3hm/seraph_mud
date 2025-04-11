@@ -14,12 +14,9 @@ defmodule Web.Admin.DashboardController do
   Loads the admin dashboard with online users and recent announcements.
   """
   def index(conn, _params) do
-    players = User.connected_players()
-    announcements = Announcement.recent()
-
-    conn
-    |> assign(:players, players)
-    |> assign(:announcements, announcements)
-    |> render("index.html")
+    render(conn, :index,
+      players: User.connected_players(),
+      announcements: Announcement.recent()
+    )
   end
 end

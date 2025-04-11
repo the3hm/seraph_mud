@@ -7,7 +7,7 @@ defmodule Web.Admin.AnnouncementController do
 
   alias Web.Announcement
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Displays a paginated list of announcements.
@@ -19,7 +19,7 @@ defmodule Web.Admin.AnnouncementController do
     conn
     |> assign(:announcements, announcements)
     |> assign(:pagination, pagination)
-    |> render("index.html")
+    |> render(:index)
   end
 
   @doc """
@@ -30,7 +30,7 @@ defmodule Web.Admin.AnnouncementController do
 
     conn
     |> assign(:announcement, announcement)
-    |> render("show.html")
+    |> render(:show)
   end
 
   @doc """
@@ -41,7 +41,7 @@ defmodule Web.Admin.AnnouncementController do
 
     conn
     |> assign(:changeset, changeset)
-    |> render("new.html")
+    |> render(:new)
   end
 
   @doc """
@@ -52,13 +52,13 @@ defmodule Web.Admin.AnnouncementController do
       {:ok, announcement} ->
         conn
         |> put_flash(:info, "#{announcement.title} created!")
-        |> redirect(to: announcement_path(conn, :show, announcement.id))
+        |> redirect(to: ~p"/admin/announcements/#{announcement.id}")
 
       {:error, changeset} ->
         conn
         |> put_flash(:error, "There was a problem creating the announcement. Please try again.")
         |> assign(:changeset, changeset)
-        |> render("new.html")
+        |> render(:new)
     end
   end
 
@@ -72,7 +72,7 @@ defmodule Web.Admin.AnnouncementController do
     conn
     |> assign(:announcement, announcement)
     |> assign(:changeset, changeset)
-    |> render("edit.html")
+    |> render(:edit)
   end
 
   @doc """
@@ -83,16 +83,19 @@ defmodule Web.Admin.AnnouncementController do
       {:ok, announcement} ->
         conn
         |> put_flash(:info, "#{announcement.title} updated!")
-        |> redirect(to: announcement_path(conn, :show, announcement.id))
+        |> redirect(to: ~p"/admin/announcements/#{announcement.id}")
 
       {:error, changeset} ->
         announcement = Announcement.get(id)
 
         conn
-        |> put_flash(:error, "There was a problem updating #{announcement.title}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was a problem updating #{announcement.title}. Please try again."
+        )
         |> assign(:announcement, announcement)
         |> assign(:changeset, changeset)
-        |> render("edit.html")
+        |> render(:edit)
     end
   end
 end

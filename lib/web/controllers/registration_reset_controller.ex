@@ -9,7 +9,7 @@ defmodule Web.RegistrationResetController do
   alias Web.User
   alias Web.Router.Helpers, as: Routes
 
-  plug :ensure_registration_enabled?
+  plug(:ensure_registration_enabled?)
 
   @doc """
   Renders the password reset request form.

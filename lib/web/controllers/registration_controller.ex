@@ -9,8 +9,8 @@ defmodule Web.RegistrationController do
   alias Web.User
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser when action in [:finalize, :update]
-  plug :ensure_registration_enabled?
+  plug(Web.Plug.PublicEnsureUser when action in [:finalize, :update])
+  plug(:ensure_registration_enabled?)
 
   @doc """
   Renders the registration form.
@@ -57,7 +57,7 @@ defmodule Web.RegistrationController do
   def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
     cond do
       User.finalize_registration?(user) &&
-        match?({:ok, _}, User.finalize_user(user, params)) ->
+          match?({:ok, _}, User.finalize_user(user, params)) ->
         redirect(conn, to: Routes.public_page_path(conn, :index))
 
       {:error, changeset} = User.finalize_user(user, params) ->

@@ -5,7 +5,6 @@ defmodule Web.Admin.RoomGlobalFeatureController do
 
   use Web.AdminController
 
-  alias Web.Router.Helpers, as: Routes
   alias Web.Feature
   alias Web.Room
 
@@ -15,7 +14,7 @@ defmodule Web.Admin.RoomGlobalFeatureController do
   def new(conn, %{"room_id" => room_id}) do
     room = Room.get(room_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       room: room,
       features: Feature.all()
     )
@@ -29,14 +28,16 @@ defmodule Web.Admin.RoomGlobalFeatureController do
 
     case Room.add_global_feature(room, feature_id) do
       {:ok, _room} ->
-        conn
-        |> put_flash(:info, "Room feature added!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}",
+          flash: [info: "Room feature added!"]
+        )
 
       :error ->
-        conn
-        |> put_flash(:error, "There was an issue adding the feature. Please try again.")
-        |> redirect(to: Routes.admin_room_feature_path(conn, :add, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}/features/new",
+          flash: [error: "There was an issue adding the feature. Please try again."]
+        )
     end
   end
 
@@ -48,14 +49,16 @@ defmodule Web.Admin.RoomGlobalFeatureController do
 
     case Room.remove_global_feature(room, feature_id) do
       {:ok, _room} ->
-        conn
-        |> put_flash(:info, "Room feature removed!")
-        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}",
+          flash: [info: "Room feature removed!"]
+        )
 
       :error ->
-        conn
-        |> put_flash(:error, "There was an issue removing the feature. Please try again.")
-        |> redirect(to: Routes.admin_room_feature_path(conn, :add, room.id))
+        redirect(conn,
+          to: ~p"/admin/rooms/#{room.id}/features/new",
+          flash: [error: "There was an issue removing the feature. Please try again."]
+        )
     end
   end
 end

@@ -14,6 +14,8 @@ defmodule Web.AdminController do
   import Phoenix.Controller
   alias Web.Router.Helpers, as: Routes
 
+  use Phoenix.VerifiedRoutes, endpoint: Web.Endpoint, router: Web.Router
+
   @doc """
   Injects admin-specific controller behavior, including layout and permission checks.
   """
@@ -28,11 +30,11 @@ defmodule Web.AdminController do
           ensure_admin!: 2
         ]
 
-      plug :put_layout, "admin.html"
-      plug Web.Plug.LoadUser
-      plug Web.Plug.LoadCharacter
-      plug :ensure_user!
-      plug :ensure_at_least_builder!
+      plug(:put_layout, "admin.html")
+      plug(Web.Plug.LoadUser)
+      plug(Web.Plug.LoadCharacter)
+      plug(:ensure_user!)
+      plug(:ensure_at_least_builder!)
     end
   end
 
@@ -70,7 +72,7 @@ defmodule Web.AdminController do
       conn
     else
       conn
-      |> redirect(to: Routes.dashboard_path(conn, :index))
+      |> redirect(to: Routes.admin_dashboard_path(conn, :index))  # Correct path here
       |> halt()
     end
   end

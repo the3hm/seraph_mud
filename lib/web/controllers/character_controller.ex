@@ -9,7 +9,7 @@ defmodule Web.CharacterController do
   alias Web.Character
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser
+  plug(Web.Plug.PublicEnsureUser)
 
   @doc """
   Renders the new character creation form.

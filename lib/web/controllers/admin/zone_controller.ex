@@ -9,7 +9,7 @@ defmodule Web.Admin.ZoneController do
   alias Web.Router.Helpers, as: Routes
   alias Web.Zone
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all zones with pagination.

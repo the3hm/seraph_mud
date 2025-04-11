@@ -8,7 +8,7 @@ defmodule Web.AccountController do
   alias Web.User
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser
+  plug(Web.Plug.PublicEnsureUser)
 
   @doc """
   Shows the account settings page with an email changeset.
@@ -20,7 +20,9 @@ defmodule Web.AccountController do
   @doc """
   Updates the user's password when `current_password` is provided.
   """
-  def update(%{assigns: %{current_user: user}} = conn, %{"user" => %{"current_password" => current_password} = params}) do
+  def update(%{assigns: %{current_user: user}} = conn, %{
+        "user" => %{"current_password" => current_password} = params
+      }) do
     case User.change_password(user, current_password, params) do
       {:ok, _user} ->
         conn

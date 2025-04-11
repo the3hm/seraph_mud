@@ -16,11 +16,11 @@ defmodule Web.Admin.ClassSkillController do
     changeset = Class.new_class_skill(class)
     skills = Skill.all()
 
-    conn
-    |> assign(:class, class)
-    |> assign(:skills, skills)
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new,
+      class: class,
+      skills: skills,
+      changeset: changeset
+    )
   end
 
   @doc """
@@ -31,19 +31,20 @@ defmodule Web.Admin.ClassSkillController do
 
     case Class.add_skill(class, skill_id) do
       {:ok, _class_skill} ->
-        conn
-        |> put_flash(:info, "Skill added to #{class.name}")
-        |> redirect(to: class_path(conn, :show, class.id))
+        redirect(conn,
+          to: ~p"/admin/classes/#{class.id}",
+          flash: [info: "Skill added to #{class.name}"]
+        )
 
       {:error, changeset} ->
         skills = Skill.all()
 
-        conn
-        |> put_flash(:error, "There was an issue adding the skill")
-        |> assign(:class, class)
-        |> assign(:skills, skills)
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          class: class,
+          skills: skills,
+          changeset: changeset,
+          error_flash: "There was an issue adding the skill"
+        )
     end
   end
 
@@ -53,14 +54,16 @@ defmodule Web.Admin.ClassSkillController do
   def delete(conn, %{"id" => id}) do
     case Class.remove_skill(id) do
       {:ok, class_skill} ->
-        conn
-        |> put_flash(:info, "Skill removed")
-        |> redirect(to: class_path(conn, :show, class_skill.class_id))
+        redirect(conn,
+          to: ~p"/admin/classes/#{class_skill.class_id}",
+          flash: [info: "Skill removed"]
+        )
 
       _ ->
-        conn
-        |> put_flash(:error, "There was a problem removing the skill")
-        |> redirect(to: dashboard_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/dashboard",
+          flash: [error: "There was a problem removing the skill"]
+        )
     end
   end
 end

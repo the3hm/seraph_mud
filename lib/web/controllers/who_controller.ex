@@ -6,7 +6,6 @@ defmodule Web.WhoController do
   use Web, :controller
 
   alias Web.User
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders the who list with all currently connected players.

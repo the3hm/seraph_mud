@@ -8,7 +8,7 @@ defmodule Web.ConnectionController do
   alias Web.User
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.PublicEnsureUser
+  plug(Web.Plug.PublicEnsureUser)
 
   @doc """
   Displays the authorization page for a Telnet session.

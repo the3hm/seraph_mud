@@ -9,7 +9,6 @@ defmodule Web.Admin.ItemAspectingController do
   alias Web.Item
   alias Web.ItemAspect
   alias Web.ItemAspecting
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Render form for assigning a new aspect to an item.
@@ -18,7 +17,7 @@ defmodule Web.Admin.ItemAspectingController do
     item = Item.get(item_id)
     changeset = ItemAspecting.new(item)
 
-    render(conn, "new.html",
+    render(conn, :new,
       item: item,
       item_aspects: ItemAspect.all(),
       changeset: changeset
@@ -33,16 +32,17 @@ defmodule Web.Admin.ItemAspectingController do
 
     case ItemAspecting.create(item, params) do
       {:ok, item_aspecting} ->
-        conn
-        |> put_flash(:info, "Added the aspect to #{item.name}!")
-        |> redirect(to: Routes.item_path(conn, :show, item_aspecting.item_id))
+        redirect(conn,
+          to: ~p"/admin/items/#{item_aspecting.item_id}",
+          flash: [info: "Added the aspect to #{item.name}!"]
+        )
 
       {:error, changeset} ->
-        render(conn, "new.html",
+        render(conn, :new,
           item: item,
           item_aspects: ItemAspect.all(),
           changeset: changeset,
-          error: "There was an issue adding the aspect to #{item.name}. Please try again."
+          error_flash: "There was an issue adding the aspect to #{item.name}. Please try again."
         )
     end
   end
@@ -55,14 +55,16 @@ defmodule Web.Admin.ItemAspectingController do
 
     case ItemAspecting.delete(item_aspect) do
       {:ok, _} ->
-        conn
-        |> put_flash(:info, "Aspect removed from the item.")
-        |> redirect(to: Routes.item_path(conn, :show, item_aspect.item_id))
+        redirect(conn,
+          to: ~p"/admin/items/#{item_aspect.item_id}",
+          flash: [info: "Aspect removed from the item."]
+        )
 
       _ ->
-        conn
-        |> put_flash(:error, "There was an issue removing the aspect. Please try again.")
-        |> redirect(to: Routes.item_path(conn, :show, item_aspect.item_id))
+        redirect(conn,
+          to: ~p"/admin/items/#{item_aspect.item_id}",
+          flash: [error: "There was an issue removing the aspect. Please try again."]
+        )
     end
   end
 end

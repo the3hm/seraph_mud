@@ -15,9 +15,7 @@ defmodule Web.Admin.RoomController do
   def show(conn, %{"id" => id}) do
     room = Room.get(id)
 
-    render(conn, "show.html",
-      room: room
-    )
+    render(conn, "show.html", room: room)
   end
 
   @doc """

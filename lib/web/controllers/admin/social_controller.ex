@@ -9,7 +9,7 @@ defmodule Web.Admin.SocialController do
   alias Web.Router.Helpers, as: Routes
   alias Web.Social
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all socials with optional filters and pagination.

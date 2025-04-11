@@ -6,7 +6,6 @@ defmodule Web.Admin.QuestRelationController do
   use Web.AdminController
 
   alias Web.Quest
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders a form to create a new quest relation (parent/child).
@@ -14,7 +13,7 @@ defmodule Web.Admin.QuestRelationController do
   def new(conn, %{"quest_id" => quest_id, "side" => side}) do
     quest = Quest.get(quest_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       quest: quest,
       side: side,
       changeset: Quest.new_relation()
@@ -29,17 +28,17 @@ defmodule Web.Admin.QuestRelationController do
 
     case Quest.create_relation(quest, side, params) do
       {:ok, _relation} ->
-        conn
-        |> put_flash(:info, "Quest chain updated for #{quest.name}.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, quest.id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{quest.id}",
+          flash: [info: "Quest chain updated for #{quest.name}."]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem adding to the quest chain. Please try again.")
-        |> render("new.html",
+        render(conn, :new,
           quest: quest,
           side: side,
-          changeset: changeset
+          changeset: changeset,
+          error_flash: "There was a problem adding to the quest chain. Please try again."
         )
     end
   end
@@ -52,14 +51,16 @@ defmodule Web.Admin.QuestRelationController do
 
     case Quest.delete_relation(id) do
       {:ok, _relation} ->
-        conn
-        |> put_flash(:info, "Quest chain updated for #{quest.name}.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, quest.id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{quest.id}",
+          flash: [info: "Quest chain updated for #{quest.name}."]
+        )
 
       {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem updating the quest chain. Please try again.")
-        |> redirect(to: Routes.admin_quest_path(conn, :show, quest.id))
+        redirect(conn,
+          to: ~p"/admin/quests/#{quest.id}",
+          flash: [error: "There was a problem updating the quest chain. Please try again."]
+        )
     end
   end
 end

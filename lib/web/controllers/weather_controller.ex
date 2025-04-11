@@ -4,6 +4,4 @@ defmodule Web.WeatherController do
   """
 
   use Web, :controller
-
-  alias Web.Router.Helpers, as: Routes
 end

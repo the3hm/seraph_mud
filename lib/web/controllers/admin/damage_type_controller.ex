@@ -11,22 +11,14 @@ defmodule Web.Admin.DamageTypeController do
   Lists all damage types.
   """
   def index(conn, _params) do
-    damage_types = DamageType.all()
-
-    conn
-    |> assign(:damage_types, damage_types)
-    |> render("index.html")
+    render(conn, :index, damage_types: DamageType.all())
   end
 
   @doc """
   Renders the form for creating a new damage type.
   """
   def new(conn, _params) do
-    changeset = DamageType.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new, changeset: DamageType.new())
   end
 
   @doc """
@@ -35,15 +27,16 @@ defmodule Web.Admin.DamageTypeController do
   def create(conn, %{"damage_type" => params}) do
     case DamageType.create(params) do
       {:ok, damage_type} ->
-        conn
-        |> put_flash(:info, "#{damage_type.key} created!")
-        |> redirect(to: damage_type_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/damage_types",
+          flash: [info: "#{damage_type.key} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue creating the damage type. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was an issue creating the damage type. Please try again."
+        )
     end
   end
 
@@ -52,12 +45,11 @@ defmodule Web.Admin.DamageTypeController do
   """
   def edit(conn, %{"id" => id}) do
     damage_type = DamageType.get(id)
-    changeset = DamageType.edit(damage_type)
 
-    conn
-    |> assign(:damage_type, damage_type)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, :edit,
+      damage_type: damage_type,
+      changeset: DamageType.edit(damage_type)
+    )
   end
 
   @doc """
@@ -66,18 +58,19 @@ defmodule Web.Admin.DamageTypeController do
   def update(conn, %{"id" => id, "damage_type" => params}) do
     case DamageType.update(id, params) do
       {:ok, damage_type} ->
-        conn
-        |> put_flash(:info, "#{damage_type.key} updated!")
-        |> redirect(to: damage_type_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/damage_types",
+          flash: [info: "#{damage_type.key} updated!"]
+        )
 
       {:error, changeset} ->
         damage_type = DamageType.get(id)
 
-        conn
-        |> put_flash(:error, "There was a problem updating #{damage_type.key}. Please try again.")
-        |> assign(:damage_type, damage_type)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          damage_type: damage_type,
+          changeset: changeset,
+          error_flash: "There was a problem updating #{damage_type.key}. Please try again."
+        )
     end
   end
 end

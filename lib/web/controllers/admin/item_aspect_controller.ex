@@ -8,13 +8,12 @@ defmodule Web.Admin.ItemAspectController do
   use Web.AdminController
 
   alias Web.ItemAspect
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   List all item aspects.
   """
   def index(conn, _params) do
-    render(conn, "index.html", item_aspects: ItemAspect.all())
+    render(conn, :index, item_aspects: ItemAspect.all())
   end
 
   @doc """
@@ -22,15 +21,14 @@ defmodule Web.Admin.ItemAspectController do
   """
   def show(conn, %{"id" => id}) do
     item_aspect = ItemAspect.get(id)
-
-    render(conn, "show.html", item_aspect: item_aspect)
+    render(conn, :show, item_aspect: item_aspect)
   end
 
   @doc """
   Render form for creating a new item aspect.
   """
   def new(conn, _params) do
-    render(conn, "new.html", changeset: ItemAspect.new())
+    render(conn, :new, changeset: ItemAspect.new())
   end
 
   @doc """
@@ -39,14 +37,16 @@ defmodule Web.Admin.ItemAspectController do
   def create(conn, %{"item_aspect" => params}) do
     case ItemAspect.create(params) do
       {:ok, item_aspect} ->
-        conn
-        |> put_flash(:info, "Created #{item_aspect.name}!")
-        |> redirect(to: Routes.item_aspect_path(conn, :show, item_aspect.id))
+        redirect(conn,
+          to: ~p"/admin/item_aspects/#{item_aspect.id}",
+          flash: [info: "Created #{item_aspect.name}!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue creating the item aspect. Please try again.")
-        |> render("new.html", changeset: changeset)
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was an issue creating the item aspect. Please try again."
+        )
     end
   end
 
@@ -55,12 +55,7 @@ defmodule Web.Admin.ItemAspectController do
   """
   def edit(conn, %{"id" => id}) do
     item_aspect = ItemAspect.get(id)
-    changeset = ItemAspect.edit(item_aspect)
-
-    render(conn, "edit.html",
-      item_aspect: item_aspect,
-      changeset: changeset
-    )
+    render(conn, :edit, item_aspect: item_aspect, changeset: ItemAspect.edit(item_aspect))
   end
 
   @doc """
@@ -69,18 +64,18 @@ defmodule Web.Admin.ItemAspectController do
   def update(conn, %{"id" => id, "item_aspect" => params}) do
     case ItemAspect.update(id, params) do
       {:ok, item_aspect} ->
-        conn
-        |> put_flash(:info, "#{item_aspect.name} updated!")
-        |> redirect(to: Routes.item_aspect_path(conn, :show, item_aspect.id))
+        redirect(conn,
+          to: ~p"/admin/item_aspects/#{item_aspect.id}",
+          flash: [info: "#{item_aspect.name} updated!"]
+        )
 
       {:error, changeset} ->
         item_aspect = ItemAspect.get(id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating #{item_aspect.name}. Please try again.")
-        |> render("edit.html",
+        render(conn, :edit,
           item_aspect: item_aspect,
-          changeset: changeset
+          changeset: changeset,
+          error_flash: "There was an issue updating #{item_aspect.name}. Please try again."
         )
     end
   end

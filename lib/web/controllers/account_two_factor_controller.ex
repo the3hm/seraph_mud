@@ -10,9 +10,9 @@ defmodule Web.AccountTwoFactorController do
 
   @failed_attempts_limit 3
 
-  plug Web.Plug.PublicEnsureUser
-  plug :signout_after_failed_attempts when action in [:verify, :verify_token]
-  plug :ensure_not_verified_yet! when action in [:start, :validate, :qr]
+  plug(Web.Plug.PublicEnsureUser)
+  plug(:signout_after_failed_attempts when action in [:verify, :verify_token])
+  plug(:ensure_not_verified_yet! when action in [:start, :validate, :qr])
 
   @doc """
   Starts the two-factor setup process and generates a new TOTP secret.
@@ -111,7 +111,9 @@ defmodule Web.AccountTwoFactorController do
   """
   def ensure_not_verified_yet!(%{assigns: %{current_user: user}} = conn, _opts) do
     case user.totp_verified_at do
-      nil -> conn
+      nil ->
+        conn
+
       _ ->
         conn
         |> redirect(to: Routes.public_page_path(conn, :index))

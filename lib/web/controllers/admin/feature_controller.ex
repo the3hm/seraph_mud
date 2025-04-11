@@ -20,11 +20,11 @@ defmodule Web.Admin.FeatureController do
     filter = Map.get(params, "feature", %{})
     %{page: features, pagination: pagination} = Feature.all(filter: filter, page: page, per: per)
 
-    conn
-    |> assign(:features, features)
-    |> assign(:filter, filter)
-    |> assign(:pagination, pagination)
-    |> render("index.html")
+    render(conn, :index,
+      features: features,
+      filter: filter,
+      pagination: pagination
+    )
   end
 
   @doc """
@@ -32,21 +32,14 @@ defmodule Web.Admin.FeatureController do
   """
   def show(conn, %{"id" => id}) do
     feature = Feature.get(id)
-
-    conn
-    |> assign(:feature, feature)
-    |> render("show.html")
+    render(conn, :show, feature: feature)
   end
 
   @doc """
   Renders a new feature form.
   """
   def new(conn, _params) do
-    changeset = Feature.new()
-
-    conn
-    |> assign(:changeset, changeset)
-    |> render("new.html")
+    render(conn, :new, changeset: Feature.new())
   end
 
   @doc """
@@ -55,15 +48,16 @@ defmodule Web.Admin.FeatureController do
   def create(conn, %{"feature" => params}) do
     case Feature.create(params) do
       {:ok, feature} ->
-        conn
-        |> put_flash(:info, "#{feature.key} created!")
-        |> redirect(to: feature_path(conn, :show, feature.id))
+        redirect(conn,
+          to: ~p"/admin/features/#{feature.id}",
+          flash: [info: "#{feature.key} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem creating the feature. Please try again.")
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          changeset: changeset,
+          error_flash: "There was a problem creating the feature. Please try again."
+        )
     end
   end
 
@@ -72,12 +66,7 @@ defmodule Web.Admin.FeatureController do
   """
   def edit(conn, %{"id" => id}) do
     feature = Feature.get(id)
-    changeset = Feature.edit(feature)
-
-    conn
-    |> assign(:feature, feature)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+    render(conn, :edit, feature: feature, changeset: Feature.edit(feature))
   end
 
   @doc """
@@ -86,18 +75,19 @@ defmodule Web.Admin.FeatureController do
   def update(conn, %{"id" => id, "feature" => params}) do
     case Feature.update(id, params) do
       {:ok, feature} ->
-        conn
-        |> put_flash(:info, "#{feature.key} updated!")
-        |> redirect(to: feature_path(conn, :show, feature.id))
+        redirect(conn,
+          to: ~p"/admin/features/#{feature.id}",
+          flash: [info: "#{feature.key} updated!"]
+        )
 
       {:error, changeset} ->
         feature = Feature.get(id)
 
-        conn
-        |> put_flash(:error, "There was a problem updating #{feature.key}. Please try again.")
-        |> assign(:feature, feature)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          feature: feature,
+          changeset: changeset,
+          error_flash: "There was a problem updating #{feature.key}. Please try again."
+        )
     end
   end
 
@@ -107,14 +97,16 @@ defmodule Web.Admin.FeatureController do
   def delete(conn, %{"id" => id}) do
     case Feature.delete(id) do
       {:ok, feature} ->
-        conn
-        |> put_flash(:info, "#{feature.key} has been deleted!")
-        |> redirect(to: feature_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/features",
+          flash: [info: "#{feature.key} has been deleted!"]
+        )
 
       {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue deleting the feature. Please try again.")
-        |> redirect(to: feature_path(conn, :index))
+        redirect(conn,
+          to: ~p"/admin/features",
+          flash: [error: "There was an issue deleting the feature. Please try again."]
+        )
     end
   end
 end

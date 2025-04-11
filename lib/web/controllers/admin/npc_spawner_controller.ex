@@ -7,7 +7,6 @@ defmodule Web.Admin.NPCSpawnerController do
 
   alias Web.NPC
   alias Web.Zone
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Show a specific NPC spawner.
@@ -16,7 +15,7 @@ defmodule Web.Admin.NPCSpawnerController do
     npc_spawner = NPC.get_spawner(id)
     npc = NPC.get(npc_spawner.npc_id)
 
-    render(conn, "show.html", npc_spawner: npc_spawner, npc: npc)
+    render(conn, :show, npc_spawner: npc_spawner, npc: npc)
   end
 
   @doc """
@@ -26,7 +25,7 @@ defmodule Web.Admin.NPCSpawnerController do
     zone = Zone.get(zone_id)
     npc = NPC.get(npc_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       npc: npc,
       zone: zone,
       changeset: NPC.new_spawner(npc)
@@ -39,7 +38,7 @@ defmodule Web.Admin.NPCSpawnerController do
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       npc: npc,
       changeset: NPC.new_spawner(npc)
     )
@@ -51,17 +50,17 @@ defmodule Web.Admin.NPCSpawnerController do
   def create(conn, %{"npc_id" => npc_id, "npc_spawner" => params}) do
     npc = NPC.get(npc_id)
 
-    case NPC.add_spawner(npc, params) do
-      {:ok, npc_spawner} ->
-        conn
-        |> put_flash(:info, "Spawner created!")
-        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_spawner.npc_id))
-
+    with {:ok, npc_spawner} <- NPC.add_spawner(npc, params) do
+      redirect(conn,
+        to: ~p"/admin/npcs/#{npc_spawner.npc_id}",
+        flash: [info: "Spawner created!"]
+      )
+    else
       {:error, changeset} ->
-        conn
-        |> assign(:npc, npc)
-        |> assign(:changeset, changeset)
-        |> render("new.html")
+        render(conn, :new,
+          npc: npc,
+          changeset: changeset
+        )
     end
   end
 
@@ -71,7 +70,7 @@ defmodule Web.Admin.NPCSpawnerController do
   def edit(conn, %{"id" => id}) do
     npc_spawner = NPC.get_spawner(id)
 
-    render(conn, "edit.html",
+    render(conn, :edit,
       npc_spawner: npc_spawner,
       changeset: NPC.edit_spawner(npc_spawner)
     )
@@ -81,20 +80,20 @@ defmodule Web.Admin.NPCSpawnerController do
   Update an existing NPC spawner.
   """
   def update(conn, %{"id" => id, "npc_spawner" => params}) do
-    case NPC.update_spawner(id, params) do
-      {:ok, npc_spawner} ->
-        conn
-        |> put_flash(:info, "Spawner updated!")
-        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_spawner.npc_id))
-
+    with {:ok, npc_spawner} <- NPC.update_spawner(id, params) do
+      redirect(conn,
+        to: ~p"/admin/npcs/#{npc_spawner.npc_id}",
+        flash: [info: "Spawner updated!"]
+      )
+    else
       {:error, changeset} ->
         npc_spawner = NPC.get_spawner(id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating the spawner. Please try again.")
-        |> assign(:npc_spawner, npc_spawner)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
+        render(conn, :edit,
+          npc_spawner: npc_spawner,
+          changeset: changeset,
+          error_flash: "There was an issue updating the spawner. Please try again."
+        )
     end
   end
 
@@ -102,16 +101,17 @@ defmodule Web.Admin.NPCSpawnerController do
   Delete an NPC spawner.
   """
   def delete(conn, %{"id" => id, "npc_id" => npc_id}) do
-    case NPC.delete_spawner(id) do
-      {:ok, _spawner} ->
-        conn
-        |> put_flash(:info, "NPC spawner deleted!")
-        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_id))
-
+    with {:ok, _spawner} <- NPC.delete_spawner(id) do
+      redirect(conn,
+        to: ~p"/admin/npcs/#{npc_id}",
+        flash: [info: "NPC spawner deleted!"]
+      )
+    else
       {:error, _reason} ->
-        conn
-        |> put_flash(:error, "There was an issue deleting the spawner. Please try again.")
-        |> redirect(to: Routes.admin_npc_path(conn, :show, npc_id))
+        redirect(conn,
+          to: ~p"/admin/npcs/#{npc_id}",
+          flash: [error: "There was an issue deleting the spawner. Please try again."]
+        )
     end
   end
 end

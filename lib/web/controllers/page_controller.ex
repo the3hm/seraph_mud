@@ -7,7 +7,6 @@ defmodule Web.PageController do
 
   alias Web.Announcement
   alias Web.Zone
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders the homepage with recent announcements.
@@ -27,14 +26,14 @@ defmodule Web.PageController do
   Renders the Mudlet package XML used by the client.
   """
   def mudlet_package(conn, _params) do
-    render(conn, "mudlet-package.xml")
+    render(conn, :mudlet_package)
   end
 
   @doc """
   Renders the game map as XML.
   """
   def map(conn, _params) do
-    render(conn, "map.xml", zones: Zone.all())
+    render(conn, :map, zones: Zone.all())
   end
 
   @doc """
@@ -43,6 +42,6 @@ defmodule Web.PageController do
   def manifest(conn, _params) do
     conn
     |> put_resp_header("content-type", "application/manifest+json")
-    |> render("manifest.json")
+    |> render(:manifest)
   end
 end

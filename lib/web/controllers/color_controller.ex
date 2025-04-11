@@ -6,7 +6,6 @@ defmodule Web.ColorController do
   use Web, :controller
 
   alias Web.ColorCode
-  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Renders a CSS file with game color codes, used by clients and the homepage.
@@ -18,7 +17,7 @@ defmodule Web.ColorController do
     conn
     |> put_resp_header("content-type", "text/css")
     |> put_resp_header("cache-control", "public, max-age=86400")
-    |> render("index.css",
+    |> render(:index,
       is_client: is_client,
       is_home: is_home,
       color_codes: ColorCode.all()

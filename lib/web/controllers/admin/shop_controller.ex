@@ -5,7 +5,6 @@ defmodule Web.Admin.ShopController do
 
   use Web.AdminController
 
-  alias Web.Router.Helpers, as: Routes
   alias Web.Room
   alias Web.Shop
 
@@ -16,7 +15,7 @@ defmodule Web.Admin.ShopController do
     shop = Shop.get(id)
     room = Room.get(shop.room_id)
 
-    render(conn, "show.html",
+    render(conn, :show,
       shop: shop,
       room: room
     )
@@ -28,7 +27,7 @@ defmodule Web.Admin.ShopController do
   def new(conn, %{"room_id" => room_id}) do
     room = Room.get(room_id)
 
-    render(conn, "new.html",
+    render(conn, :new,
       room: room,
       changeset: Shop.new(room)
     )
@@ -42,16 +41,16 @@ defmodule Web.Admin.ShopController do
 
     case Shop.create(room, params) do
       {:ok, shop} ->
-        conn
-        |> put_flash(:info, "#{shop.name} created!")
-        |> redirect(to: Routes.admin_shop_path(conn, :show, shop.id))
+        redirect(conn,
+          to: ~p"/admin/shops/#{shop.id}",
+          flash: [info: "#{shop.name} created!"]
+        )
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "There was an issue creating the shop. Please try again.")
-        |> render("new.html",
+        render(conn, :new,
           room: room,
-          changeset: changeset
+          changeset: changeset,
+          error_flash: "There was an issue creating the shop. Please try again."
         )
     end
   end
@@ -63,7 +62,7 @@ defmodule Web.Admin.ShopController do
     shop = Shop.get(id)
     room = Room.get(shop.room_id)
 
-    render(conn, "edit.html",
+    render(conn, :edit,
       shop: shop,
       room: room,
       changeset: Shop.edit(shop)
@@ -76,20 +75,20 @@ defmodule Web.Admin.ShopController do
   def update(conn, %{"id" => id, "shop" => params}) do
     case Shop.update(id, params) do
       {:ok, shop} ->
-        conn
-        |> put_flash(:info, "#{shop.name} updated!")
-        |> redirect(to: Routes.admin_shop_path(conn, :show, shop.id))
+        redirect(conn,
+          to: ~p"/admin/shops/#{shop.id}",
+          flash: [info: "#{shop.name} updated!"]
+        )
 
       {:error, changeset} ->
         shop = Shop.get(id)
         room = Room.get(shop.room_id)
 
-        conn
-        |> put_flash(:error, "There was an issue updating #{shop.name}. Please try again.")
-        |> render("edit.html",
+        render(conn, :edit,
           shop: shop,
           room: room,
-          changeset: changeset
+          changeset: changeset,
+          error_flash: "There was an issue updating #{shop.name}. Please try again."
         )
     end
   end

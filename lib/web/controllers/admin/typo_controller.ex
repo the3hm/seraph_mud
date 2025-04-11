@@ -9,7 +9,7 @@ defmodule Web.Admin.TypoController do
   alias Web.Router.Helpers, as: Routes
   alias Web.Typo
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all typos with pagination.

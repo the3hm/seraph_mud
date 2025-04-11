@@ -9,8 +9,8 @@ defmodule Web.Admin.UserController do
   alias Web.Router.Helpers, as: Routes
   alias Web.User
 
-  plug Web.Plug.FetchPage when action in [:index]
-  plug :ensure_admin!
+  plug(Web.Plug.FetchPage when action in [:index])
+  plug(:ensure_admin!)
 
   @doc """
   Lists all users with filters and pagination.

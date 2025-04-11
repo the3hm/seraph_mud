@@ -9,7 +9,7 @@ defmodule Web.Admin.SkillController do
   alias Web.Router.Helpers, as: Routes
   alias Web.Skill
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all skills with optional filters.

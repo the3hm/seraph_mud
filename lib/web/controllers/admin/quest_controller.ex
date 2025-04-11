@@ -8,7 +8,7 @@ defmodule Web.Admin.QuestController do
   alias Web.Quest
   alias Web.Router.Helpers, as: Routes
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   @doc """
   Lists all quests with optional filtering.

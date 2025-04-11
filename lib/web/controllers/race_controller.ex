@@ -6,7 +6,6 @@ defmodule Web.RaceController do
   use Web, :controller
 
   alias Web.Race
-  alias Web.Router.Helpers, as: Routes
 
   def index(conn, _params) do
     races = Race.all(alpha: true)
@@ -16,7 +15,7 @@ defmodule Web.RaceController do
   def show(conn, %{"id" => id}) do
     case Race.get(id) do
       nil ->
-        redirect(conn, to: Routes.public_page_path(conn, :index))
+        redirect(conn, to: ~p"/")
 
       race ->
         render(conn, :show, race: race, extended: true)

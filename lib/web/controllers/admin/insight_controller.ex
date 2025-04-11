@@ -12,6 +12,6 @@ defmodule Web.Admin.InsightController do
   Render the admin insights dashboard.
   """
   def index(conn, _params) do
-    render(conn, "index.html")
+    render(conn, :index)
   end
 end

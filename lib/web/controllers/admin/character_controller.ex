@@ -7,8 +7,8 @@ defmodule Web.Admin.CharacterController do
 
   alias Web.Character
 
-  plug Web.Plug.FetchPage when action in [:index]
-  plug :ensure_admin!
+  plug(Web.Plug.FetchPage when action in [:index])
+  plug(:ensure_admin!)
 
   @doc """
   Displays a paginated list of characters with optional filters.
@@ -55,7 +55,7 @@ defmodule Web.Admin.CharacterController do
   def reset(conn, %{"character_id" => id}) do
     Character.reset(id)
 
-    redirect(conn, to: character_path(conn, :show, id))
+    redirect(conn, to: ~p"/admin/characters/#{id}")
   end
 
   @doc """
@@ -65,8 +65,8 @@ defmodule Web.Admin.CharacterController do
     %{current_character: character} = conn.assigns
 
     case Character.teleport(character, room_id) do
-      {:ok, _character} -> redirect(conn, to: room_path(conn, :show, room_id))
-      _ -> redirect(conn, to: room_path(conn, :show, room_id))
+      {:ok, _character} -> redirect(conn, to: ~p"/admin/rooms/#{room_id}")
+      _ -> redirect(conn, to: ~p"/admin/rooms/#{room_id}")
     end
   end
 
@@ -76,10 +76,10 @@ defmodule Web.Admin.CharacterController do
   def disconnect(conn, %{"character_id" => id}) do
     with {:ok, id} <- Ecto.Type.cast(:integer, id),
          :ok <- Character.disconnect(id) do
-      redirect(conn, to: character_path(conn, :show, id))
+      redirect(conn, to: ~p"/admin/characters/#{id}")
     else
       _ ->
-        redirect(conn, to: character_path(conn, :show, id))
+        redirect(conn, to: ~p"/admin/characters/#{id}")
     end
   end
 
@@ -88,6 +88,6 @@ defmodule Web.Admin.CharacterController do
   """
   def disconnect(conn, _params) do
     Character.disconnect()
-    redirect(conn, to: dashboard_path(conn, :index))
+    redirect(conn, to: ~p"/admin/dashboard")
   end
 end
